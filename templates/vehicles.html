@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Vehicles & VIN Registry | AutoCare Multi-Brand{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <!-- Section Title -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <span class="badge bg-dark text-white px-2 py-1 text-uppercase tracking-wider small mb-1">Multi-Brand Fleet & VIN Tracking</span>
+      <h3 class="fw-bold m-0" style="color: #000000; letter-spacing: -0.5px;">Vehicle Fleet Registry</h3>
+    </div>
+    <div class="d-flex gap-2">
+      <!-- Search Form (Search by Registration, VIN, Model, Make) -->
+      <form method="GET" action="{{ url_for('vehicles') }}" class="d-flex gap-2">
+        <input type="text" name="search" value="{{ search_query }}" class="form-control form-control-custom" placeholder="Search by VIN, Reg No, Brand..." style="max-width: 280px;">
+        {% if search_query %}
+          <a href="{{ url_for('vehicles') }}" class="btn btn-outline-secondary" title="Clear Search">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        {% endif %}
+        <button type="submit" class="btn btn-dark">Search</button>
+      </form>
+
+      <!-- Add Vehicle Button -->
+      <a href="{{ url_for('add_vehicle') }}" class="btn btn-dark">
+        <i class="bi bi-plus-circle me-1"></i> Register Vehicle
+      </a>
+    </div>
+  </div>
+
+  <!-- Vehicle Table with VIN, Model Number, Warranty Details, and Service History Link -->
+  <div class="luxury-card">
+    <div class="luxury-card-header">
+      <h4 class="luxury-card-title">
+        <i class="bi bi-car-front-fill me-2"></i> Enrolled Vehicles & Digital Dossiers
+      </h4>
+      <span class="badge bg-light text-dark border">{{ vehicles|length }} Vehicles Enrolled</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="luxury-table">
+        <thead>
+          <tr>
+            <th>Registration No</th>
+            <th>VIN (Chassis Number)</th>
+            <th>Make & Model</th>
+            <th>Model Number / Trim</th>
+            <th>Owner / Customer</th>
+            <th>Warranty Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if vehicles %}
+            {% for v in vehicles %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('vehicle_detail', id=v.vehicle_id) }}" class="text-decoration-none">
+                    <span class="reg-plate" title="Click to view full service history">{{ v.registration_no }}</span>
+                  </a>
+                </td>
+                <td>
+                  {% if v.vin %}
+                    <span class="badge bg-light text-dark border font-monospace fw-bold" style="font-size: 0.78rem; letter-spacing: 0.8px;">
+                      <i class="bi bi-upc me-1 text-muted"></i>{{ v.vin }}
+                    </span>
+                  {% else %}
+                    <span class="text-muted small fst-italic">Not recorded</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="fw-bold text-dark">{{ v.make }} {{ v.model }}</div>
+                </td>
+                <td>
+                  <span class="badge bg-light text-secondary border font-monospace">
+                    {{ v.model_number or 'Standard' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="fw-semibold text-dark">{{ v.customer_name }}</div>
+                  <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ v.customer_phone or 'No phone' }}</small>
+                </td>
+                <td>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle small px-2 py-1" style="font-size: 0.75rem;">
+                    <i class="bi bi-shield-check me-1"></i>{{ v.warranty_details or 'Active' }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <a href="{{ url_for('vehicle_detail', id=v.vehicle_id) }}" class="btn btn-sm btn-dark" title="View VIN Details & Complete Service History">
+                      <i class="bi bi-clock-history me-1"></i> History
+                    </a>
+                    <a href="{{ url_for('edit_vehicle', id=v.vehicle_id) }}" class="btn btn-sm btn-outline-dark" title="Edit Vehicle">
+                      <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_vehicle', id=v.vehicle_id) }}" class="delete-form d-inline" data-item-type="Vehicle" data-item-name="{{ v.registration_no }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Vehicle">
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="text-muted mb-2"><i class="bi bi-car-front fs-1"></i></div>
+                <h5 class="fw-bold text-secondary">No Vehicles Found</h5>
+                <p class="text-muted small">
+                  {% if search_query %}
+                    No vehicle matched query "{{ search_query }}".
+                  {% else %}
+                    Register your first vehicle with VIN and warranty specifications.
+                  {% endif %}
+                </p>
+                <a href="{{ url_for('add_vehicle') }}" class="btn btn-sm btn-dark mt-2">
+                  <i class="bi bi-plus-circle me-1"></i> Register Vehicle
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+# Environments & Credentials
+.env
+venv/
+.venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Temporary / Scratch Setup Scripts
+install_mingit.py
+render_perf_graph.py
+take_all_screenshots.py
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

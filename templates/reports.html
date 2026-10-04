@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports & Audits | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <span class="badge bg-dark text-white px-2 py-1 text-uppercase tracking-wider small mb-1">DBMS Analytics</span>
+      <h3 class="fw-bold m-0" style="color: #000000; letter-spacing: -0.5px;">Workshop Reports & Audit Queries</h3>
+    </div>
+    <div>
+      <button onclick="window.print()" class="btn btn-sm btn-outline-dark">
+        <i class="bi bi-printer me-1"></i> Print / Export Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Financial Summary KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="luxury-stat-card">
+        <div class="stat-label">Total Realized Revenue (Paid)</div>
+        <div class="stat-value text-dark">₹{{ "{:,.2f}".format(total_paid_revenue) }}</div>
+        <small class="text-success"><i class="bi bi-shield-check me-1"></i>Settled Invoices</small>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="luxury-stat-card">
+        <div class="stat-label">Outstanding Receivables (Unpaid)</div>
+        <div class="stat-value text-danger">₹{{ "{:,.2f}".format(total_unpaid_revenue) }}</div>
+        <small class="text-danger"><i class="bi bi-clock-history me-1"></i>Pending Customer Settlement</small>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="luxury-stat-card">
+        <div class="stat-label">Pending Workshop Operations</div>
+        <div class="stat-value text-dark">{{ pending_jobs_report|length }}</div>
+        <small class="text-muted"><i class="bi bi-tools me-1"></i>Currently Active in Bays</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Navigation Tabs -->
+  <div class="luxury-card mb-4">
+    <div class="luxury-card-header bg-white border-bottom">
+      <ul class="nav nav-pills" id="reportTabs" role="tablist">
+        <li class="nav-item me-2" role="presentation">
+          <button class="nav-link {% if not active_tab or active_tab in ['cust-veh', 'customer'] %}active{% endif %} btn-sm fw-semibold" id="cust-veh-tab" data-bs-toggle="pill" data-bs-target="#cust-veh" type="button" role="tab">
+            <i class="bi bi-person-lines-fill me-1"></i> 1. Customer & Vehicle Report
+          </button>
+        </li>
+        <li class="nav-item me-2" role="presentation">
+          <button class="nav-link {% if active_tab in ['pending', 'pending-jobs', 'pending_jobs'] %}active{% endif %} btn-sm fw-semibold" id="pending-jobs-tab" data-bs-toggle="pill" data-bs-target="#pending-jobs" type="button" role="tab">
+            <i class="bi bi-hourglass-split me-1"></i> 2. Pending Workshop Jobs
+          </button>
+        </li>
+        <li class="nav-item me-2" role="presentation">
+          <button class="nav-link {% if active_tab in ['bookings', 'booking'] %}active{% endif %} btn-sm fw-semibold" id="bookings-tab" data-bs-toggle="pill" data-bs-target="#bookings-rep" type="button" role="tab">
+            <i class="bi bi-calendar3 me-1"></i> 3. Booking History Audit
+          </button>
+        </li>
+        <li class="nav-item me-2" role="presentation">
+          <button class="nav-link {% if active_tab in ['revenue', 'rev'] %}active{% endif %} btn-sm fw-semibold" id="revenue-tab" data-bs-toggle="pill" data-bs-target="#revenue-rep" type="button" role="tab">
+            <i class="bi bi-cash-coin me-1"></i> 4. Revenue Audit
+          </button>
+        </li>
+        <li class="nav-item me-2" role="presentation">
+          <button class="nav-link {% if active_tab in ['parts', 'spare_parts', 'spare-parts'] %}active{% endif %} btn-sm fw-semibold" id="parts-tab" data-bs-toggle="pill" data-bs-target="#parts-rep" type="button" role="tab">
+            <i class="bi bi-box-seam me-1"></i> 5. Spare Part Report
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link btn-sm fw-semibold" href="{{ url_for('performance') }}">
+            <i class="bi bi-speedometer2 me-1 text-primary"></i> 6. Performance Metrics
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="p-0">
+      <div class="tab-content" id="reportTabsContent">
+        
+        <!-- REPORT 1: Customer + Vehicle Report -->
+        <div class="tab-pane fade {% if not active_tab or active_tab in ['cust-veh', 'customer'] %}show active{% endif %} p-4" id="cust-veh" role="tabpanel">
+          <div class="mb-3">
+            <h5 class="fw-bold mb-1">Customer & Vehicle Association Report</h5>
+            <p class="text-muted small mb-0">Demonstrating relational <code class="text-dark fw-bold">Customer JOIN Vehicle</code> mapping registered clients to performance models.</p>
+          </div>
+
+          <div class="table-responsive border rounded">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Contact Phone</th>
+                  <th>Vehicle Registration</th>
+                  <th>Manufacturer</th>
+                  <th>Model Specification</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in customer_vehicle_report %}
+                  <tr>
+                    <td class="fw-bold">{{ row.customer_name }}</td>
+                    <td>{{ row.phone or 'N/A' }}</td>
+                    <td><span class="reg-plate">{{ row.registration_no }}</span></td>
+                    <td><span class="badge bg-dark text-white">{{ row.make }}</span></td>
+                    <td class="fw-semibold">{{ row.model }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REPORT 2: Pending Jobs Report -->
+        <div class="tab-pane fade {% if active_tab in ['pending', 'pending-jobs', 'pending_jobs'] %}show active{% endif %} p-4" id="pending-jobs" role="tabpanel">
+          <div class="mb-3">
+            <h5 class="fw-bold mb-1">Pending Workshop Jobs Report</h5>
+            <p class="text-muted small mb-0">Demonstrating 3-table join: <code class="text-dark fw-bold">Job_Card JOIN Service_Booking JOIN Vehicle</code> filtered by <code class="text-danger fw-bold">status = 'Pending'</code>.</p>
+          </div>
+
+          <div class="table-responsive border rounded">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th>Job Card ID</th>
+                  <th>Client</th>
+                  <th>Vehicle Registration</th>
+                  <th>Work Description</th>
+                  <th>Job Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if pending_jobs_report %}
+                  {% for row in pending_jobs_report %}
+                    <tr>
+                      <td><span class="badge bg-light text-dark border">#{{ row.job_card_id }}</span></td>
+                      <td class="fw-semibold">{{ row.customer_name }}</td>
+                      <td><span class="reg-plate">{{ row.registration_no }}</span></td>
+                      <td>{{ row.job_description }}</td>
+                      <td><span class="badge-status status-pending">{{ row.status }}</span></td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">No pending jobs found.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REPORT 3: Booking Report -->
+        <div class="tab-pane fade {% if active_tab in ['bookings', 'booking'] %}show active{% endif %} p-4" id="bookings-rep" role="tabpanel">
+          <div class="mb-3">
+            <h5 class="fw-bold mb-1">Comprehensive Service Booking Audit</h5>
+            <p class="text-muted small mb-0">Demonstrating <code class="text-dark fw-bold">Service_Booking JOIN Vehicle JOIN Customer</code> ordered chronologically.</p>
+          </div>
+
+          <div class="table-responsive border rounded">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Client</th>
+                  <th>Vehicle</th>
+                  <th>Service Operation</th>
+                  <th>Scheduled Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in booking_report %}
+                  <tr>
+                    <td><span class="badge bg-light text-dark border">#{{ row.booking_id }}</span></td>
+                    <td class="fw-semibold">{{ row.customer_name }}</td>
+                    <td>
+                      <span class="reg-plate">{{ row.registration_no }}</span>
+                      <small class="text-muted ms-1">({{ row.make }} {{ row.model }})</small>
+                    </td>
+                    <td class="fw-medium">{{ row.service_type }}</td>
+                    <td><i class="bi bi-calendar3 text-muted me-1"></i>{{ row.booking_date }}</td>
+                    <td>
+                      <span class="badge-status status-{{ row.status.lower().replace(' ', '') }}">
+                        {{ row.status }}
+                      </span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REPORT 4: Revenue Report -->
+        <div class="tab-pane fade {% if active_tab in ['revenue', 'rev'] %}show active{% endif %} p-4" id="revenue-rep" role="tabpanel">
+          <div class="mb-3">
+            <h5 class="fw-bold mb-1">Revenue & Invoice Audit</h5>
+            <p class="text-muted small mb-0">Aggregate financial metrics calculated via <code class="text-dark fw-bold">SUM(total_amount) WHERE status = 'Paid'</code>.</p>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded border">
+                <div class="text-muted small fw-bold text-uppercase">Realized Paid Collections</div>
+                <div class="fs-4 fw-bold text-dark">₹{{ "{:,.2f}".format(total_paid_revenue) }}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded border">
+                <div class="text-muted small fw-bold text-uppercase">Outstanding Receivables</div>
+                <div class="fs-4 fw-bold text-danger">₹{{ "{:,.2f}".format(total_unpaid_revenue) }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive border rounded">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th>Invoice</th>
+                  <th>Client</th>
+                  <th>Vehicle</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inv in revenue_invoices %}
+                  <tr>
+                    <td><span class="badge bg-light text-dark border">#INV-{{ inv.invoice_id }}</span></td>
+                    <td class="fw-semibold">{{ inv.customer_name }}</td>
+                    <td><span class="reg-plate">{{ inv.registration_no }}</span></td>
+                    <td>{{ inv.invoice_date }}</td>
+                    <td class="fw-bold">₹{{ "{:,.2f}".format(inv.total_amount) }}</td>
+                    <td>
+                      <span class="badge-status status-{{ inv.status.lower() }}">
+                        {{ inv.status }}
+                      </span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REPORT 5: Spare Part Report -->
+        <div class="tab-pane fade {% if active_tab in ['parts', 'spare_parts', 'spare-parts'] %}show active{% endif %} p-4" id="parts-rep" role="tabpanel">
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold mb-1">Spare Part Inventory & Stock Valuation Report</h5>
+              <p class="text-muted small mb-0">Warehouse stock evaluation, component unit pricing, total valuation, and low-stock threshold monitoring.</p>
+            </div>
+            <div class="d-flex gap-2 mt-2 mt-md-0">
+              <span class="badge bg-light text-dark border">{{ spare_parts_report|length }} Part Types</span>
+              <span class="badge bg-light text-dark border">{{ total_parts_stock }} Stock Units</span>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded border">
+                <div class="text-muted small fw-bold text-uppercase">Total Inventory Valuation</div>
+                <div class="fs-4 fw-bold text-dark">₹{{ "{:,.2f}".format(total_parts_valuation) }}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded border">
+                <div class="text-muted small fw-bold text-uppercase">Low Stock Alert Items</div>
+                <div class="fs-4 fw-bold text-warning">
+                  {{ spare_parts_report|selectattr('stock_status', 'equalto', 'Low Stock')|list|length }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive border rounded">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th>Part ID</th>
+                  <th>Part Name</th>
+                  <th>Unit Price</th>
+                  <th>Stock Quantity</th>
+                  <th>Total Valuation</th>
+                  <th>Stock Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for part in spare_parts_report %}
+                  <tr>
+                    <td><span class="badge bg-light text-dark border">#P-{{ part.part_id }}</span></td>
+                    <td class="fw-semibold">{{ part.part_name }}</td>
+                    <td>₹{{ "{:,.2f}".format(part.price) }}</td>
+                    <td class="fw-bold">{{ part.stock_quantity }}</td>
+                    <td class="fw-bold">₹{{ "{:,.2f}".format(part.total_valuation) }}</td>
+                    <td>
+                      {% if part.stock_quantity <= 5 %}
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                          <i class="bi bi-exclamation-triangle me-1"></i>Low Stock
+                        </span>
+                      {% else %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                          <i class="bi bi-check-circle me-1"></i>Sufficient
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

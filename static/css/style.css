@@ -1,0 +1,556 @@
+/* =========================================================
+   LUXURY AUTOMOTIVE SERVICE PORTAL (BMW & PORSCHE DESIGN SYSTEM)
+   Ultra-Clean, Minimalist, High-Contrast Typography & Photography
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* High-End Monochrome & Luxury Accent Palette */
+  --luxury-black: #000000;
+  --luxury-dark: #111111;
+  --luxury-slate: #212529;
+  --luxury-gray-light: #F8F9FA;
+  --luxury-gray-border: #E5E7EB;
+  --luxury-muted: #6B7280;
+  --luxury-blue: #0066B1; /* BMW Iconic Blue */
+  --luxury-red: #D5001C;  /* Porsche Guards Red */
+  
+  /* Status Colors (Subtle & High-Contrast) */
+  --status-completed: #10B981;
+  --status-inprogress: #0066B1;
+  --status-pending: #F59E0B;
+  --status-cancelled: #EF4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #FFFFFF;
+  color: var(--luxury-dark);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------
+   TOPBAR NAVIGATION (BMW & PORSCHE MINIMALIST HEADER)
+   --------------------------------------------------------- */
+.luxury-navbar {
+  background-color: #000000;
+  color: #FFFFFF;
+  padding: 14px 48px;
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.luxury-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.luxury-nav-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.luxury-brand-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.luxury-brand-subtitle {
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  color: #9CA3AF;
+  text-transform: uppercase;
+}
+
+.luxury-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+}
+
+.luxury-nav-item a {
+  color: #D1D5DB;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+  padding: 6px 0;
+}
+
+.luxury-nav-item a:hover,
+.luxury-nav-item a.active {
+  color: #FFFFFF;
+}
+
+.luxury-nav-item a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #FFFFFF;
+}
+
+.luxury-nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.luxury-nav-icons i {
+  font-size: 1.2rem;
+  color: #D1D5DB;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.luxury-nav-icons i:hover {
+  color: #FFFFFF;
+}
+
+/* Secondary Sub-Navigation (Image 1 Style: Our philosophy | Service offering | Documents) */
+.sub-navbar {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--luxury-gray-border);
+  padding: 14px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.sub-nav-item {
+  text-decoration: none;
+  color: #4B5563;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding-bottom: 6px;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.sub-nav-item:hover,
+.sub-nav-item.active {
+  color: #000000;
+  font-weight: 600;
+}
+
+.sub-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 0;
+  width: 100%;
+  height: 2.5px;
+  background-color: #000000;
+}
+
+/* ---------------------------------------------------------
+   HERO BANNER (Exact Replication of Image 3: The New BMW 7)
+   --------------------------------------------------------- */
+.bmw-hero-section {
+  position: relative;
+  background-color: #000000;
+  background-image: url('../images/bmw_7_hero.png');
+  background-size: cover;
+  background-position: center top;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  padding: 60px 64px;
+  color: #FFFFFF;
+  overflow: hidden;
+}
+
+.bmw-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+.bmw-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 580px;
+}
+
+.bmw-hero-tag {
+  font-size: 0.82rem;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #E5E7EB;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.bmw-hero-numeral {
+  font-size: 7rem;
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -2px;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 8px;
+}
+
+.bmw-hero-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.bmw-hero-subtitle {
+  font-size: 1.05rem;
+  color: #D1D5DB;
+  font-weight: 400;
+  margin-bottom: 28px;
+}
+
+.btn-hero-outline {
+  border: 1.5px solid #FFFFFF;
+  background: transparent;
+  color: #FFFFFF;
+  padding: 10px 28px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.btn-hero-outline:hover {
+  background: #FFFFFF;
+  color: #000000;
+}
+
+/* ---------------------------------------------------------
+   EDITORIAL SECTIONS (Matching Image 1 & Image 2)
+   --------------------------------------------------------- */
+.section-headline {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -0.5px;
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.service-card-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.service-offering-card:hover .service-card-img {
+  transform: scale(1.02);
+}
+
+.service-offering-card h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #111111;
+}
+
+.service-offering-card p {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #4B5563;
+  margin-bottom: 16px;
+}
+
+.link-read-more {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #000000;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: gap 0.2s ease;
+}
+
+.link-read-more:hover {
+  color: var(--luxury-blue);
+  gap: 10px;
+}
+
+/* Split Information Card (Image 2 Style) */
+.further-info-horizontal {
+  background: #FFFFFF;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.further-info-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.btn-black {
+  background-color: #000000;
+  color: #FFFFFF;
+  border: 1px solid #000000;
+  padding: 10px 26px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.btn-black:hover {
+  background-color: #212529;
+  color: #FFFFFF;
+}
+
+.split-card-black {
+  background-color: #000000;
+  color: #FFFFFF;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+
+.split-card-black-content {
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.btn-white {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 1px solid #FFFFFF;
+  padding: 10px 24px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.btn-white:hover {
+  background-color: #E5E7EB;
+  color: #000000;
+}
+
+/* ---------------------------------------------------------
+   OPERATIONAL DBMS TABLES & CARDS
+   --------------------------------------------------------- */
+.luxury-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.luxury-card {
+  background: #FFFFFF;
+  border: 1px solid var(--luxury-gray-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+.luxury-card-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--luxury-gray-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #FFFFFF;
+}
+
+.luxury-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.luxury-stat-card {
+  border: 1px solid var(--luxury-gray-border);
+  border-radius: 10px;
+  padding: 22px 24px;
+  background: #FFFFFF;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.luxury-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.stat-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6B7280;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #000000;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+/* Table Styling */
+.luxury-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.luxury-table th {
+  background-color: #F9FAFB;
+  color: #6B7280;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--luxury-gray-border);
+}
+
+.luxury-table td {
+  padding: 16px 20px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #F3F4F6;
+  vertical-align: middle;
+}
+
+.luxury-table tr:hover td {
+  background-color: #F9FAFB;
+}
+
+/* Registration Plate Badge */
+.reg-plate {
+  display: inline-block;
+  background: #000000;
+  color: #FFFFFF;
+  font-family: 'Inter', monospace;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+/* Status Badges */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.badge-status.status-completed,
+.badge-status.status-paid,
+.badge-status.status-available {
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+
+.badge-status.status-inprogress,
+.badge-status.status-busy {
+  background-color: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
+}
+
+.badge-status.status-pending,
+.badge-status.status-booked {
+  background-color: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+.badge-status.status-cancelled,
+.badge-status.status-unavailable,
+.badge-status.status-unpaid {
+  background-color: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+/* Forms */
+.form-label-custom {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #111111;
+  margin-bottom: 6px;
+}
+
+.form-control-custom,
+.form-select-custom {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--luxury-gray-border);
+  border-radius: 6px;
+}
+
+.form-control-custom:focus,
+.form-select-custom:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Footer */
+.luxury-footer {
+  background-color: #000000;
+  color: #9CA3AF;
+  padding: 48px 24px;
+  border-top: 1px solid #222222;
+  font-size: 0.82rem;
+}

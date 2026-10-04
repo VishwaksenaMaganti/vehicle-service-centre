@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 160" width="300" height="160">
+  <g fill="#002C5F">
+    <!-- Stylized Slanted H in Oval -->
+    <ellipse cx="150" cy="80" rx="140" ry="70" fill="none" stroke="#002C5F" stroke-width="14" />
+    <path d="M 95 125 C 90 95, 92 65, 115 35 C 120 35, 128 35, 132 42 C 120 70, 118 90, 120 125 Z" />
+    <path d="M 205 35 C 210 65, 208 95, 185 125 C 180 125, 172 125, 168 118 C 180 90, 182 70, 180 35 Z" />
+    <path d="M 105 82 C 130 68, 170 92, 195 78 C 195 86, 190 94, 182 96 C 160 86, 130 106, 105 82 Z" />
+  </g>
+</svg>

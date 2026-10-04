@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Workshop Job Cards | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <span class="badge bg-dark text-white px-2 py-1 text-uppercase tracking-wider small mb-1">Bay Operations</span>
+      <h3 class="fw-bold m-0" style="color: #000000; letter-spacing: -0.5px;">Workshop Job Cards</h3>
+    </div>
+
+    <div class="d-flex gap-2">
+      <!-- Search & Status Filter -->
+      <form method="GET" action="{{ url_for('job_cards') }}" class="d-flex gap-2">
+        <input type="text" name="search" value="{{ search_query }}" class="form-control form-control-custom" placeholder="Search vehicle or job..." style="max-width: 220px;">
+        <select name="status" class="form-select form-select-custom" style="width: auto;" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+          <option value="In Progress" {% if status_filter == 'In Progress' %}selected{% endif %}>In Progress</option>
+          <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
+        </select>
+        {% if search_query or status_filter %}
+          <a href="{{ url_for('job_cards') }}" class="btn btn-outline-secondary" title="Clear Filters">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        {% endif %}
+        <button type="submit" class="btn btn-dark">Filter</button>
+      </form>
+
+      <!-- Add Job Card Button -->
+      <a href="{{ url_for('add_job_card') }}" class="btn btn-dark">
+        <i class="bi bi-clipboard-plus me-1"></i> Issue Job Card
+      </a>
+    </div>
+  </div>
+
+  <div class="luxury-card">
+    <div class="luxury-card-header">
+      <h4 class="luxury-card-title">
+        <i class="bi bi-clipboard2-check-fill me-2"></i> Active Workshop Job Cards
+      </h4>
+      <span class="badge bg-light text-dark border">{{ job_cards|length }} Jobs</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="luxury-table">
+        <thead>
+          <tr>
+            <th>Job Card ID</th>
+            <th>Client</th>
+            <th>Vehicle</th>
+            <th>Booking Reference</th>
+            <th>Work Description</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if job_cards %}
+            {% for jc in job_cards %}
+              <tr>
+                <td><span class="badge bg-light text-dark border">#{{ jc.job_card_id }}</span></td>
+                <td>
+                  <div class="fw-bold text-dark">{{ jc.customer_name }}</div>
+                  <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ jc.customer_phone or 'No phone' }}</small>
+                </td>
+                <td>
+                  <span class="reg-plate">{{ jc.registration_no }}</span>
+                  <div class="text-muted small mt-1">{{ jc.make }} {{ jc.model }}</div>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark border">Booking #{{ jc.booking_id }}</span>
+                  <div class="text-muted small mt-1">{{ jc.service_type }}</div>
+                </td>
+                <td>
+                  <div class="fw-medium text-dark" style="max-width: 280px;">
+                    {{ jc.job_description }}
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-status status-{{ jc.status.lower().replace(' ', '') }}">
+                    {{ jc.status }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <a href="{{ url_for('edit_job_card', id=jc.job_card_id) }}" class="btn btn-sm btn-outline-dark" title="Update Job Card">
+                      <i class="bi bi-pencil-square"></i> Status / Edit
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_job_card', id=jc.job_card_id) }}" class="delete-form d-inline" data-item-type="Job Card" data-item-name="Job Card #{{ jc.job_card_id }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Job Card">
+                        <i class="bi bi-trash3"></i> Delete
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="text-muted mb-2"><i class="bi bi-clipboard-x fs-1"></i></div>
+                <h5 class="fw-bold text-secondary">No Job Cards Found</h5>
+                <p class="text-muted small">Issue a job card to assign precision tasks to workshop bays.</p>
+                <a href="{{ url_for('add_job_card') }}" class="btn btn-sm btn-dark mt-2">
+                  <i class="bi bi-clipboard-plus me-1"></i> Issue Job Card
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

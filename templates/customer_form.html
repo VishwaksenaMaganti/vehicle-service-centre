@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Edit Client Profile' if action == 'edit' else 'Register Client' }} | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="luxury-card">
+        <div class="luxury-card-header">
+          <h4 class="luxury-card-title">
+            <i class="bi {{ 'bi-pencil-square' if action == 'edit' else 'bi-person-plus-fill' }} me-2"></i>
+            {{ 'Edit Client Information' if action == 'edit' else 'New Client Registration' }}
+          </h4>
+          <a href="{{ url_for('customers') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Directory
+          </a>
+        </div>
+
+        <div class="p-4">
+          <form method="POST" action="{{ url_for('edit_customer', id=customer.customer_id) if action == 'edit' else url_for('add_customer') }}">
+            <div class="mb-3">
+              <label for="name" class="form-label-custom">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-custom" id="name" name="name" value="{{ customer.name if customer else '' }}" placeholder="e.g. Rahul Kumar" required>
+              <div class="form-text">Primary vehicle owner or corporate account representative.</div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="phone" class="form-label-custom">Phone Number</label>
+                <input type="tel" class="form-control form-control-custom" id="phone" name="phone" value="{{ customer.phone if customer else '' }}" placeholder="e.g. 9876543210" maxlength="15">
+                <div class="form-text">Direct mobile contact for live status updates.</div>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label-custom">Email Address</label>
+                <input type="email" class="form-control form-control-custom" id="email" name="email" value="{{ customer.email if customer else '' }}" placeholder="e.g. rahul@example.com" maxlength="100">
+                <div class="form-text">For digital diagnostic reports and invoices.</div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <a href="{{ url_for('customers') }}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-dark">
+                <i class="bi bi-check2-circle me-1"></i> {{ 'Update Client' if action == 'edit' else 'Save Client' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

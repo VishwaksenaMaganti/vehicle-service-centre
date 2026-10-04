@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Edit Part' if action == 'edit' else 'Catalog Part' }} | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="luxury-card">
+        <div class="luxury-card-header">
+          <h4 class="luxury-card-title">
+            <i class="bi {{ 'bi-pencil-square' if action == 'edit' else 'bi-plus-circle-fill' }} me-2"></i>
+            {{ 'Edit Component Details' if action == 'edit' else 'Catalog Genuine Component' }}
+          </h4>
+          <a href="{{ url_for('spare_parts') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Inventory
+          </a>
+        </div>
+
+        <div class="p-4">
+          <form method="POST" action="{{ url_for('edit_spare_part', id=spare_part.part_id) if action == 'edit' else url_for('add_spare_part') }}">
+            <!-- Part Name -->
+            <div class="mb-3">
+              <label for="part_name" class="form-label-custom">Component Name & Specification <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-custom" id="part_name" name="part_name" value="{{ spare_part.part_name if spare_part else '' }}" placeholder="e.g. Mobil 1 0W-40, Carbon Ceramic Brake Pads" required maxlength="100" list="partSuggestions">
+              <datalist id="partSuggestions">
+                <option value="Mobil 1 ESP X3 0W-40 Synthetic Oil (1L)">
+                <option value="Castrol EDGE Titanium 5W-30 (1L)">
+                <option value="Porsche High-Flow Oil Filter">
+                <option value="BMW TwinPower Oil Filter">
+                <option value="Carbon Ceramic Front Brake Pads">
+                <option value="Performance Iridium Spark Plugs (Set of 6)">
+                <option value="High-Performance Engine Coolant (5L)">
+                <option value="Michelin Pilot Sport 4S Tyre (245/35 R20)">
+              </datalist>
+              <div class="form-text">Specify component part description.</div>
+            </div>
+
+            <!-- Price & Stock Quantity -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="price" class="form-label-custom">Unit Price (INR ₹) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0" class="form-control form-control-custom" id="price" name="price" value="{{ spare_part.price if spare_part else '0.00' }}" required>
+                <div class="form-text">Price cannot be negative.</div>
+              </div>
+              <div class="col-md-6">
+                <label for="stock_quantity" class="form-label-custom">Current Stock Quantity <span class="text-danger">*</span></label>
+                <input type="number" step="1" min="0" class="form-control form-control-custom" id="stock_quantity" name="stock_quantity" value="{{ spare_part.stock_quantity if spare_part else '0' }}" required>
+                <div class="form-text">Stock <= 5 automatically activates "Low Stock" indicator.</div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <a href="{{ url_for('spare_parts') }}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-dark">
+                <i class="bi bi-check2-circle me-1"></i> {{ 'Update Component' if action == 'edit' else 'Save to Warehouse' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

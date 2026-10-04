@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Multi-Brand Automotive Centre{% endblock %} | Vehicle Service Centre</title>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans (Precision Automotive Typography) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- Custom Universal Automotive Theme CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- =========================================================
+       TOPBAR NAVIGATION (UNIVERSAL MULTI-BRAND AUTOMOTIVE HEADER)
+       ========================================================= -->
+  <header class="luxury-navbar d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-4">
+      <a href="{{ url_for('dashboard') }}" class="luxury-nav-brand">
+        <img src="{{ url_for('static', filename='images/autocare_logo.svg') }}" alt="AutoCare Emblem" class="luxury-nav-logo">
+        <div class="d-flex flex-column">
+          <span class="luxury-brand-title">AUTOCARE PRECISION</span>
+          <span class="luxury-brand-subtitle">MULTI-BRAND SERVICE CENTRE</span>
+        </div>
+      </a>
+
+      <!-- Primary Module Links -->
+      <ul class="luxury-nav-links d-none d-xl-flex">
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('dashboard') }}" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('customers') }}" class="{% if active_page == 'customers' %}active{% endif %}">Customers</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('vehicles') }}" class="{% if active_page == 'vehicles' %}active{% endif %}">Vehicles & VIN</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('bookings') }}" class="{% if active_page == 'bookings' %}active{% endif %}">Bookings</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('job_cards') }}" class="{% if active_page == 'job_cards' %}active{% endif %}">Job Cards</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('mechanics') }}" class="{% if active_page == 'mechanics' %}active{% endif %}">Technicians</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('spare_parts') }}" class="{% if active_page == 'spare_parts' %}active{% endif %}">Parts</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('invoices') }}" class="{% if active_page == 'invoices' %}active{% endif %}">Invoices</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('reports') }}" class="{% if active_page == 'reports' %}active{% endif %}">Reports</a>
+        </li>
+        <li class="luxury-nav-item">
+          <a href="{{ url_for('performance') }}" class="{% if active_page == 'performance' %}active{% endif %}">Performance</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right Header Utilities -->
+    <div class="luxury-nav-icons d-flex align-items-center">
+      <span class="badge bg-light text-dark px-2 py-1 me-2 d-none d-md-inline-block small" style="font-size: 0.75rem; letter-spacing: 0.8px;">
+        <i class="bi bi-shield-check text-success me-1"></i>ALL BRANDS SUPPORTED
+      </span>
+      <a href="{{ url_for('vehicles') }}" class="text-white-50 text-decoration-none" title="Search Vehicle / VIN">
+        <i class="bi bi-search text-white"></i>
+      </a>
+      <i class="bi bi-person text-white" title="Service Advisor Desk"></i>
+      <i class="bi bi-geo-alt text-white" title="Workshop Bay Location"></i>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       SUB-NAVIGATION BAR (Editorial Style: Our philosophy | Service offering | Documents)
+       ========================================================= -->
+  <nav class="sub-navbar">
+    <a href="{{ url_for('dashboard') }}#workshop-philosophy" class="sub-nav-item">Our philosophy</a>
+    <a href="{{ url_for('dashboard') }}#service-offering" class="sub-nav-item {% if active_page not in ['performance', 'reports'] %}active{% endif %}">Service offering</a>
+    <a href="{{ url_for('reports') }}" class="sub-nav-item {% if active_page == 'reports' %}active{% endif %}">Documents & History</a>
+    <a href="{{ url_for('performance') }}" class="sub-nav-item {% if active_page == 'performance' %}active{% endif %}">Performance Metrics</a>
+  </nav>
+
+  <!-- Mobile Navigation Bar (visible on small screens) -->
+  <div class="d-xl-none bg-light border-bottom p-2 text-center overflow-x-auto text-nowrap">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-outline-dark mx-1">Dashboard</a>
+    <a href="{{ url_for('customers') }}" class="btn btn-sm btn-outline-dark mx-1">Customers</a>
+    <a href="{{ url_for('vehicles') }}" class="btn btn-sm btn-outline-dark mx-1">Vehicles & VIN</a>
+    <a href="{{ url_for('bookings') }}" class="btn btn-sm btn-outline-dark mx-1">Bookings</a>
+    <a href="{{ url_for('job_cards') }}" class="btn btn-sm btn-outline-dark mx-1">Job Cards</a>
+    <a href="{{ url_for('mechanics') }}" class="btn btn-sm btn-outline-dark mx-1">Technicians</a>
+    <a href="{{ url_for('spare_parts') }}" class="btn btn-sm btn-outline-dark mx-1">Parts</a>
+    <a href="{{ url_for('invoices') }}" class="btn btn-sm btn-outline-dark mx-1">Invoices</a>
+    <a href="{{ url_for('reports') }}" class="btn btn-sm btn-outline-dark mx-1">Reports</a>
+    <a href="{{ url_for('performance') }}" class="btn btn-sm btn-outline-dark mx-1">Performance</a>
+  </div>
+
+  <!-- Flash Messages Container -->
+  <div class="luxury-container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show shadow-sm" role="alert">
+            <div class="d-flex align-items-center gap-2">
+              {% if category == 'success' %}
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+              {% elif category == 'danger' or category == 'error' %}
+                <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+              {% else %}
+                <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+              {% endif %}
+              <span>{{ message }}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Main Injected Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Universal Luxury Footer -->
+  <footer class="luxury-footer mt-5">
+    <div class="luxury-container">
+      <div class="row align-items-center">
+        <div class="col-md-6 mb-3 mb-md-0">
+          <div class="fw-bold text-white text-uppercase tracking-wider mb-1">
+            AUTOCARE PRECISION · MULTI-BRAND VEHICLE SERVICE CENTRE
+          </div>
+          <p class="text-secondary small mb-0">Universal Automotive Diagnostic & Workshop Management System · College DBMS Project backed by MySQL 8.0</p>
+        </div>
+        <div class="col-md-6 text-md-end text-secondary small">
+          <div>Supporting all domestic and international automobile manufacturers</div>
+          <div class="mt-1">Full VIN tracking · Active warranty verification · Verified service history records</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

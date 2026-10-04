@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Update Booking' if action == 'edit' else 'New Service Appointment' }} | AutoCare Multi-Brand{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="luxury-card">
+        <div class="luxury-card-header">
+          <h4 class="luxury-card-title">
+            <i class="bi {{ 'bi-pencil-square' if action == 'edit' else 'bi-calendar-plus-fill' }} me-2"></i>
+            {{ 'Edit Appointment Details' if action == 'edit' else 'Schedule Service Appointment' }}
+          </h4>
+          <a href="{{ url_for('bookings') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Bookings
+          </a>
+        </div>
+
+        <div class="p-4">
+          <form method="POST" action="{{ url_for('edit_booking', id=booking.booking_id) if action == 'edit' else url_for('add_booking') }}">
+            <!-- Vehicle Selection Dropdown -->
+            <div class="mb-3">
+              <label for="vehicle_id" class="form-label-custom">Enrolled Vehicle <span class="text-danger">*</span></label>
+              <select class="form-select form-select-custom" id="vehicle_id" name="vehicle_id" required>
+                <option value="" disabled {% if not booking and not selected_vehicle_id %}selected{% endif %}>-- Select Vehicle from Database --</option>
+                {% for v in vehicles %}
+                  <option value="{{ v.vehicle_id }}" {% if (booking and booking.vehicle_id == v.vehicle_id) or (selected_vehicle_id and selected_vehicle_id == v.vehicle_id) %}selected{% endif %}>
+                    {{ v.registration_no }} — {{ v.make }} {{ v.model }} (Owner: {{ v.customer_name }})
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="form-text">Select the client vehicle requiring workshop attention.</div>
+            </div>
+
+            <!-- Service Type & Date -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="service_type" class="form-label-custom">Service Operation <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-custom" id="service_type" name="service_type" value="{{ booking.service_type if booking else '' }}" placeholder="e.g. Annual Maintenance, Brake Inspection" required maxlength="100" list="serviceTypeSuggestions">
+                <datalist id="serviceTypeSuggestions">
+                  <option value="Annual Precision Maintenance">
+                  <option value="Mobil 1 Synthetic Oil & Filter Service">
+                  <option value="Carbon Ceramic Brake Inspection">
+                  <option value="High-Voltage Electrical Diagnostics">
+                  <option value="Track Preparation & Wheel Alignment">
+                  <option value="Climate Control & Filter Replacement">
+                  <option value="Suspension & Steering Calibration">
+                </datalist>
+              </div>
+              <div class="col-md-6">
+                <label for="booking_date" class="form-label-custom">Scheduled Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control form-control-custom" id="booking_date" name="booking_date" value="{{ booking.booking_date if booking else default_date }}" required>
+              </div>
+            </div>
+
+            <!-- Status Dropdown -->
+            <div class="mb-3">
+              <label for="status" class="form-label-custom">Appointment Status <span class="text-danger">*</span></label>
+              <select class="form-select form-select-custom" id="status" name="status" required>
+                <option value="Booked" {% if not booking or booking.status == 'Booked' %}selected{% endif %}>Booked</option>
+                <option value="In Progress" {% if booking and booking.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Completed" {% if booking and booking.status == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Cancelled" {% if booking and booking.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+              </select>
+              <div class="form-text">Update status as the vehicle progresses through the workshop bays.</div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <a href="{{ url_for('bookings') }}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-dark">
+                <i class="bi bi-check2-circle me-1"></i> {{ 'Update Appointment' if action == 'edit' else 'Confirm Appointment' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

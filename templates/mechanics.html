@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Technicians | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <span class="badge bg-dark text-white px-2 py-1 text-uppercase tracking-wider small mb-1">Certified Specialists</span>
+      <h3 class="fw-bold m-0" style="color: #000000; letter-spacing: -0.5px;">Technician Roster</h3>
+    </div>
+
+    <div class="d-flex gap-2">
+      <!-- Search & Status Filter -->
+      <form method="GET" action="{{ url_for('mechanics') }}" class="d-flex gap-2">
+        <input type="text" name="search" value="{{ search_query }}" class="form-control form-control-custom" placeholder="Search technician or domain..." style="max-width: 220px;">
+        <select name="status" class="form-select form-select-custom" style="width: auto;" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="Available" {% if status_filter == 'Available' %}selected{% endif %}>Available</option>
+          <option value="Busy" {% if status_filter == 'Busy' %}selected{% endif %}>Busy</option>
+          <option value="Unavailable" {% if status_filter == 'Unavailable' %}selected{% endif %}>Unavailable</option>
+        </select>
+        {% if search_query or status_filter %}
+          <a href="{{ url_for('mechanics') }}" class="btn btn-outline-secondary" title="Clear Filters">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        {% endif %}
+        <button type="submit" class="btn btn-dark">Filter</button>
+      </form>
+
+      <!-- Add Mechanic Button -->
+      <a href="{{ url_for('add_mechanic') }}" class="btn btn-dark">
+        <i class="bi bi-person-plus me-1"></i> Register Technician
+      </a>
+    </div>
+  </div>
+
+  <div class="luxury-card">
+    <div class="luxury-card-header">
+      <h4 class="luxury-card-title">
+        <i class="bi bi-wrench-adjustable-circle-fill me-2"></i> Certified Service Technicians & Specialists
+      </h4>
+      <span class="badge bg-light text-dark border">{{ mechanics|length }} Technicians</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="luxury-table">
+        <thead>
+          <tr>
+            <th>Technician ID</th>
+            <th>Name</th>
+            <th>Specialization Area</th>
+            <th>Contact Phone</th>
+            <th>Availability Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if mechanics %}
+            {% for m in mechanics %}
+              <tr>
+                <td><span class="badge bg-light text-dark border">#{{ m.mechanic_id }}</span></td>
+                <td>
+                  <div class="fw-bold text-dark">{{ m.name }}</div>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark border">
+                    <i class="bi bi-gear-fill me-1 text-muted"></i>{{ m.specialization or 'High-Performance Diagnostics' }}
+                  </span>
+                </td>
+                <td>
+                  {% if m.phone %}
+                    <span><i class="bi bi-telephone text-muted me-1"></i>{{ m.phone }}</span>
+                  {% else %}
+                    <span class="text-muted fst-italic">Not provided</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="badge-status status-{{ m.status.lower() }}">
+                    {{ m.status }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <a href="{{ url_for('edit_mechanic', id=m.mechanic_id) }}" class="btn btn-sm btn-outline-dark" title="Edit Technician">
+                      <i class="bi bi-pencil-square"></i> Edit
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_mechanic', id=m.mechanic_id) }}" class="delete-form d-inline" data-item-type="Mechanic" data-item-name="{{ m.name }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Technician">
+                        <i class="bi bi-trash3"></i> Delete
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-5">
+                <div class="text-muted mb-2"><i class="bi bi-wrench-adjustable fs-1"></i></div>
+                <h5 class="fw-bold text-secondary">No Technicians Found</h5>
+                <p class="text-muted small">Register certified technicians to manage bay assignments.</p>
+                <a href="{{ url_for('add_mechanic') }}" class="btn btn-sm btn-dark mt-2">
+                  <i class="bi bi-person-plus me-1"></i> Add Technician
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

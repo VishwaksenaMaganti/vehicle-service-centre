@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad_Tucson" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+    <linearGradient id="carBody_Tucson" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="windowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#334155" stop-opacity="0.7" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#002c5f" flood-opacity="0.18" />
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="640" height="360" rx="16" fill="url(#bgGrad_Tucson)" />
+  
+  <!-- Subtle Studio Grid Floor -->
+  <path d="M 40 280 L 600 280 M 80 300 L 560 300 M 120 320 L 520 320" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4" />
+  
+  <!-- Shadow Under Car -->
+  <ellipse cx="320" cy="275" rx="230" ry="18" fill="#001a33" opacity="0.25" filter="blur(6px)" />
+
+  <!-- Car Group with Drop Shadow -->
+  <g filter="url(#shadow)">
+    <!-- Main Body Silhouette -->
+    <!-- Front Bumper, Hood, Windshield, Roof, Rear Slope, Trunk -->
+    <path d="M 100 235 
+             C 100 220, 115 210, 140 205 
+             C 170 200, 200 195, 230 165 
+             C 260 135, 300 120, 390 120 
+             C 450 120, 485 135, 515 175 
+             C 535 200, 545 220, 540 238 
+             C 538 245, 520 250, 490 250 
+             L 450 250 
+             C 445 220, 405 220, 400 250 
+             L 240 250 
+             C 235 220, 195 220, 190 250 
+             L 120 250 
+             C 105 250, 100 245, 100 235 Z" 
+          fill="url(#carBody_Tucson)" stroke="#002c5f" stroke-width="2" />
+
+    <!-- Sleek Aerodynamic Character Lines -->
+    <path d="M 145 208 C 220 205, 340 195, 525 185" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.65" />
+    <path d="M 180 230 C 260 228, 360 220, 430 225" stroke="#001937" stroke-width="2" opacity="0.3" />
+
+    <!-- Windows Greenhouse -->
+    <path d="M 238 168 
+             C 265 142, 300 130, 385 130 
+             C 440 130, 470 142, 498 175 
+             C 460 176, 320 178, 238 168 Z" 
+          fill="url(#windowGrad)" stroke="#1e293b" stroke-width="2" />
+
+    <!-- Window Pillar Dividers (B-Pillar & C-Pillar) -->
+    <line x1="355" y1="130" x2="352" y2="173" stroke="#0f172a" stroke-width="6" />
+    <line x1="435" y1="133" x2="445" y2="173" stroke="#0f172a" stroke-width="5" />
+
+    <!-- Headlight & Tail Light -->
+    <!-- Hyundai LED Signature Light Strip -->
+    <path d="M 105 225 C 115 215, 140 215, 155 218 L 140 225 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+    <path d="M 525 210 C 538 215, 538 225, 528 230 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="1.5" />
+
+    <!-- Front Wheel -->
+    <g transform="translate(215, 250)">
+      <circle cx="0" cy="0" r="38" fill="#1e293b" stroke="#0f172a" stroke-width="3" />
+      <circle cx="0" cy="0" r="28" fill="#475569" />
+      <!-- Alloy Spokes -->
+      <circle cx="0" cy="0" r="18" fill="#94a3b8" />
+      <circle cx="0" cy="0" r="8" fill="#002c5f" />
+      <line x1="-24" y1="0" x2="24" y2="0" stroke="#f8fafc" stroke-width="4" />
+      <line x1="0" y1="-24" x2="0" y2="24" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-17" y1="-17" x2="17" y2="17" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-17" y1="17" x2="17" y2="-17" stroke="#f8fafc" stroke-width="4" />
+    </g>
+
+    <!-- Rear Wheel -->
+    <g transform="translate(425, 250)">
+      <circle cx="0" cy="0" r="38" fill="#1e293b" stroke="#0f172a" stroke-width="3" />
+      <circle cx="0" cy="0" r="28" fill="#475569" />
+      <!-- Alloy Spokes -->
+      <circle cx="0" cy="0" r="18" fill="#94a3b8" />
+      <circle cx="0" cy="0" r="8" fill="#002c5f" />
+      <line x1="-24" y1="0" x2="24" y2="0" stroke="#f8fafc" stroke-width="4" />
+      <line x1="0" y1="-24" x2="0" y2="24" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-17" y1="-17" x2="17" y2="17" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-17" y1="17" x2="17" y2="-17" stroke="#f8fafc" stroke-width="4" />
+    </g>
+  </g>
+
+  <!-- Model & Spec Watermark / Badge -->
+  <rect x="28" y="24" width="130" height="26" rx="6" fill="#002c5f" />
+  <text x="93" y="41" fill="#ffffff" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="11" font-weight="700" letter-spacing="1.5" text-anchor="middle">HYUNDAI</text>
+  
+  <text x="28" y="78" fill="#0f172a" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="22" font-weight="800">Tucson</text>
+  <text x="28" y="98" fill="#64748b" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="12" font-weight="600" letter-spacing="0.5">Luxury AWD SUV · Official Workshop Spec</text>
+</svg>

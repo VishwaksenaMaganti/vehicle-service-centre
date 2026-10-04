@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Edit Invoice' if action == 'edit' else 'Generate Invoice' }} | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="luxury-card">
+        <div class="luxury-card-header">
+          <h4 class="luxury-card-title">
+            <i class="bi {{ 'bi-pencil-square' if action == 'edit' else 'bi-receipt' }} me-2"></i>
+            {{ 'Edit Invoice Particulars' if action == 'edit' else 'Generate Client Invoice' }}
+          </h4>
+          <a href="{{ url_for('invoices') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Invoices
+          </a>
+        </div>
+
+        <div class="p-4">
+          <form method="POST" action="{{ url_for('edit_invoice', id=invoice.invoice_id) if action == 'edit' else url_for('add_invoice') }}">
+            <!-- Job Card Dropdown -->
+            <div class="mb-3">
+              <label for="job_card_id" class="form-label-custom">Workshop Job Card Reference <span class="text-danger">*</span></label>
+              <select class="form-select form-select-custom" id="job_card_id" name="job_card_id" required>
+                <option value="" disabled {% if not invoice %}selected{% endif %}>-- Select Workshop Job Card --</option>
+                {% for jc in job_cards %}
+                  <option value="{{ jc.job_card_id }}" {% if invoice and invoice.job_card_id == jc.job_card_id %}selected{% endif %}>
+                    Job #{{ jc.job_card_id }} · {{ jc.registration_no }} ({{ jc.customer_name }}) — {{ jc.job_description }} [{{ jc.status }}]
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="form-text">Choose the job card for which this bill is generated.</div>
+            </div>
+
+            <!-- Invoice Date & Total Amount -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="invoice_date" class="form-label-custom">Invoice Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control form-control-custom" id="invoice_date" name="invoice_date" value="{{ invoice.invoice_date if invoice else default_date }}" required>
+              </div>
+              <div class="col-md-6">
+                <label for="total_amount" class="form-label-custom">Total Amount (INR ₹) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0" class="form-control form-control-custom" id="total_amount" name="total_amount" value="{{ invoice.total_amount if invoice else '0.00' }}" required>
+                <div class="form-text">Gross service, labor, and component charges. Cannot be negative.</div>
+              </div>
+            </div>
+
+            <!-- Payment Status -->
+            <div class="mb-3">
+              <label for="status" class="form-label-custom">Payment Settlement Status <span class="text-danger">*</span></label>
+              <select class="form-select form-select-custom" id="status" name="status" required>
+                <option value="Unpaid" {% if not invoice or invoice.status == 'Unpaid' %}selected{% endif %}>Unpaid</option>
+                <option value="Paid" {% if invoice and invoice.status == 'Paid' %}selected{% endif %}>Paid</option>
+              </select>
+              <div class="form-text">Switch to "Paid" once settlement is completed.</div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <a href="{{ url_for('invoices') }}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-dark">
+                <i class="bi bi-check2-circle me-1"></i> {{ 'Update Invoice' if action == 'edit' else 'Save & Dispatch Invoice' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

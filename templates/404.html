@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found | Vehicle Service Centre{% endblock %}
+{% block page_heading %}404 - Not Found{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+  <div class="col-md-6 text-center">
+    <div class="hyundai-card p-5">
+      <div class="mb-3 text-warning">
+        <i class="bi bi-exclamation-triangle-fill" style="font-size: 3.5rem;"></i>
+      </div>
+      <h3 class="fw-bold mb-2" style="color: var(--hyundai-navy);">Requested Page Not Found</h3>
+      <p class="text-muted mb-4">
+        The record or service route you are attempting to access does not exist or has been removed.
+      </p>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-hyundai-primary">
+        <i class="bi bi-speedometer2 me-1"></i> Return to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

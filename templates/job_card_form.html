@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Update Job Card' if action == 'edit' else 'Issue Job Card' }} | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="luxury-card">
+        <div class="luxury-card-header">
+          <h4 class="luxury-card-title">
+            <i class="bi {{ 'bi-pencil-square' if action == 'edit' else 'bi-clipboard-plus-fill' }} me-2"></i>
+            {{ 'Edit Job Card Specification' if action == 'edit' else 'Issue Workshop Job Card' }}
+          </h4>
+          <a href="{{ url_for('job_cards') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Job Cards
+          </a>
+        </div>
+
+        <div class="p-4">
+          <form method="POST" action="{{ url_for('edit_job_card', id=job_card.job_card_id) if action == 'edit' else url_for('add_job_card') }}">
+            <!-- Booking Selection Dropdown -->
+            <div class="mb-3">
+              <label for="booking_id" class="form-label-custom">Service Booking Reference <span class="text-danger">*</span></label>
+              <select class="form-select form-select-custom" id="booking_id" name="booking_id" required>
+                <option value="" disabled {% if not job_card %}selected{% endif %}>-- Select Booking from Database --</option>
+                {% for b in bookings %}
+                  <option value="{{ b.booking_id }}" {% if job_card and job_card.booking_id == b.booking_id %}selected{% endif %}>
+                    Booking #{{ b.booking_id }} · {{ b.registration_no }} ({{ b.make }} {{ b.model }}) — {{ b.customer_name }} [{{ b.service_type }}]
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="form-text">Directly binds this technical task to the scheduled appointment.</div>
+            </div>
+
+            <!-- Job Description -->
+            <div class="mb-3">
+              <label for="job_description" class="form-label-custom">Technical Task & Diagnostic Instructions <span class="text-danger">*</span></label>
+              <textarea class="form-control form-control-custom" id="job_description" name="job_description" rows="3" placeholder="Detail component inspections, torque specifications, replacement parts, or diagnostics..." required maxlength="255">{{ job_card.job_description if job_card else '' }}</textarea>
+              <div class="form-text">Instructions for certified technicians in the Direct Dialogue Bay.</div>
+            </div>
+
+            <!-- Status Dropdown -->
+            <div class="mb-3">
+              <label for="status" class="form-label-custom">Workshop Status <span class="text-danger">*</span></label>
+              <select class="form-select form-select-custom" id="status" name="status" required>
+                <option value="Pending" {% if not job_card or job_card.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="In Progress" {% if job_card and job_card.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Completed" {% if job_card and job_card.status == 'Completed' %}selected{% endif %}>Completed</option>
+              </select>
+              <div class="form-text">Update status as technicians execute and finish the repair.</div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <a href="{{ url_for('job_cards') }}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-dark">
+                <i class="bi bi-check2-circle me-1"></i> {{ 'Update Job Card' if action == 'edit' else 'Issue Job Card' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

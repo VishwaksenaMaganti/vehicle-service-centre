@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+
+{% block title %}Multi-Brand Service Command | AutoCare Precision{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================
+     1. UNIVERSAL AUTOMOTIVE SERVICE HERO (No Commercial Ad)
+     Clean, Executive, Multi-Brand Facility Hero with Quick VIN Search
+     ========================================================= -->
+<section class="py-5 text-white position-relative" style="background: linear-gradient(135deg, #0A0F1D 0%, #111827 60%, #1F2937 100%); border-bottom: 1px solid #374151;">
+  <div class="luxury-container py-3">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <span class="badge bg-light text-dark px-3 py-1 text-uppercase tracking-wider small mb-3 fw-bold">
+          <i class="bi bi-shield-check text-success me-1"></i> Multi-Brand Workshop Facility
+        </span>
+        <h1 class="display-5 fw-bolder text-white mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+          Automotive Care & Workshop Command
+        </h1>
+        <p class="text-light lead fs-6 mb-4" style="line-height: 1.7; opacity: 0.9; max-width: 600px;">
+          Certified multi-brand maintenance, live bay job-card diagnostics, genuine OEM component allocation, warranty tracking, and permanent digital service history records for all vehicles.
+        </p>
+
+        <!-- Quick VIN / Registration Number Search Bar -->
+        <div class="p-3 rounded-3 mb-3" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); max-width: 560px;">
+          <form method="GET" action="{{ url_for('vehicles') }}" class="row g-2 align-items-center">
+            <div class="col-sm-8">
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-white-50"><i class="bi bi-upc-scan"></i></span>
+                <input type="text" name="search" class="form-control bg-dark border-secondary text-white" placeholder="Enter 17-digit VIN or Reg No..." required>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <button type="submit" class="btn btn-light w-100 fw-bold">
+                <i class="bi bi-search me-1"></i> Lookup VIN
+              </button>
+            </div>
+          </form>
+          <div class="text-white-50 mt-2" style="font-size: 0.75rem;">
+            Instant access to vehicle model numbers, warranty coverage, and previous service history.
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 pt-2">
+          <a href="{{ url_for('add_booking') }}" class="btn btn-light px-3 py-2 fw-semibold">
+            <i class="bi bi-calendar-plus me-1"></i> Book Service
+          </a>
+          <a href="{{ url_for('add_vehicle') }}" class="btn btn-outline-light px-3 py-2 fw-semibold">
+            <i class="bi bi-car-front me-1"></i> Register Vehicle
+          </a>
+          <a href="{{ url_for('vehicles') }}" class="btn btn-outline-light px-3 py-2 fw-semibold">
+            <i class="bi bi-card-checklist me-1"></i> View Fleet Dossiers
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Visual Grid (Multi-Brand Workshop Overview) -->
+      <div class="col-lg-5">
+        <div class="p-4 rounded-4 shadow-lg" style="background: #111827; border: 1px solid #374151;">
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
+            <span class="fw-bold text-white small text-uppercase tracking-wider">Multi-Brand Fleet Coverage</span>
+            <span class="badge bg-success text-white">Active</span>
+          </div>
+
+          <div class="row g-3 text-center">
+            <div class="col-6">
+              <div class="p-3 rounded-3 bg-dark border border-secondary">
+                <div class="fs-4 fw-bolder text-white">{{ stats.total_vehicles }}</div>
+                <div class="text-white-50 small">Enrolled Cars</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3 rounded-3 bg-dark border border-secondary">
+                <div class="fs-4 fw-bolder text-warning">{{ stats.pending_jobs }}</div>
+                <div class="text-white-50 small">Active Bay Jobs</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3 rounded-3 bg-dark border border-secondary">
+                <div class="fs-4 fw-bolder text-info">{{ stats.available_mechanics }}</div>
+                <div class="text-white-50 small">Available Techs</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3 rounded-3 bg-dark border border-secondary">
+                <div class="fs-4 fw-bolder text-success">₹{{ "{:,.0f}".format(stats.paid_revenue) }}</div>
+                <div class="text-white-50 small">Settled Revenue</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 text-center">
+            <small class="text-white-50">BMW · Porsche · Hyundai · Toyota · Honda · Mercedes · Tata · Audi</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     2. SERVICE OFFERING SECTION (Exact Replica of User Image 1)
+     Service & Maintenance | Genuine Parts, Tyres & Oil | Warranty
+     ========================================================= -->
+<section class="py-5" id="service-offering" style="background-color: #FFFFFF;">
+  <div class="luxury-container">
+    <h2 class="section-headline">Service offering</h2>
+
+    <div class="row g-4">
+      <!-- Card 1: Service & Maintenance -->
+      <div class="col-lg-4 col-md-6">
+        <div class="service-offering-card">
+          <img src="{{ url_for('static', filename='images/service_maintenance.png') }}" alt="Service & Maintenance" class="service-card-img shadow-sm">
+          <h4>Service & Maintenance</h4>
+          <p>
+            From periodic servicing and preventive maintenance to expert mechanical repair, we take complete care of your vehicle. And through consultation with your certified Service Advisor in the Direct Dialogue Bay, we take care of your concerns too.
+          </p>
+          <a href="{{ url_for('job_cards') }}" class="link-read-more">
+            Read more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2: Genuine Parts, Tyres & Oil -->
+      <div class="col-lg-4 col-md-6">
+        <div class="service-offering-card">
+          <img src="{{ url_for('static', filename='images/parts_tyres.png') }}" alt="Genuine Parts, Tyres & Oil" class="service-card-img shadow-sm">
+          <h4>Genuine Parts, Tyres & Oil</h4>
+          <p>
+            The perfect collaboration of all components, along with the warranty and vehicle information, ensures a unique and safe driving experience in any vehicle. With Genuine OEM parts, certified tyres from selected partners, and the manufacturer-approved oil, your vehicle will perform better for longer, and maintain its value.
+          </p>
+          <a href="{{ url_for('spare_parts') }}" class="link-read-more">
+            Read more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3: Warranty & Vehicle Information -->
+      <div class="col-lg-4 col-md-6">
+        <div class="service-offering-card">
+          <img src="{{ url_for('static', filename='images/warranty_info.png') }}" alt="Warranty & Vehicle Information" class="service-card-img shadow-sm">
+          <h4>Warranty & Vehicle Information</h4>
+          <p>
+            Every enrolled vehicle comes with full VIN tracking, verified model specifications, and recorded warranty details that you can extend for peace of mind. Our central workshop database maintains continuous service history records for all registered automobiles.
+          </p>
+          <a href="{{ url_for('vehicles') }}" class="link-read-more">
+            Read more <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     3. FURTHER INFORMATION SECTION (Exact Replica of User Image 2)
+     Multi-Brand Standards Card & "Welcome to My Service Portal" Card
+     ========================================================= -->
+<section class="py-5" id="workshop-philosophy" style="background-color: #F9FAFB; border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB;">
+  <div class="luxury-container">
+    <h2 class="section-headline">Further information</h2>
+
+    <!-- Top Card: Technical Information -->
+    <div class="luxury-card p-4 further-info-horizontal">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <img src="{{ url_for('static', filename='images/porsche_fleet.png') }}" alt="Vehicle Fleet Inspection" class="further-info-img shadow-sm">
+        </div>
+        <div class="col-lg-6 ps-lg-4">
+          <p class="fw-bold mb-2 text-dark" style="font-size: 1.05rem;">
+            Whatever you need to know about your vehicle, we make it easy.
+          </p>
+          <p class="text-secondary small mb-3" style="line-height: 1.7;">
+            For example, you can find out more about how our vehicles' exhaust emissions, onboard diagnostics, and mechanical subsystems are inspected according to official test procedures. We are committed to sustainable efficiency, and we provide full diagnostic documentation for every service visit. Our workshops adhere to strict manufacturer regulations, and you can track how each service operation affects every individual car part. We also provide online Technical Service Information for independent workshops.
+          </p>
+          <a href="{{ url_for('reports') }}" class="btn-black">Read more</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Split Card: Welcome to My Service Portal -->
+    <div class="split-card-black shadow-sm">
+      <div class="row g-0 align-items-stretch">
+        <div class="col-lg-6">
+          <img src="{{ url_for('static', filename='images/porsche_app_car.png') }}" alt="My Service Portal Digital Gateway" style="width: 100%; height: 100%; min-height: 320px; object-fit: cover;">
+        </div>
+        <div class="col-lg-6 split-card-black-content">
+          <h3 class="fw-bold text-white mb-3" style="font-size: 1.75rem; letter-spacing: -0.5px;">Welcome to My Service Portal</h3>
+          <p class="text-light small mb-4" style="line-height: 1.7; opacity: 0.85;">
+            The world of precision automotive care is your world, and My Service Portal is your digital gateway. Wherever you are, you can organize service appointments, manage your vehicle's VIN and model data, inspect warranty status, and view complete chronological service histories. Accessible via your desktop or smartphone, our system makes it even easier to maintain any vehicle.
+          </p>
+          <a href="{{ url_for('add_booking') }}" class="btn-white">To My Service Portal</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     4. OPERATIONAL DBMS WORKSHOP COMMAND CENTRE
+     8 KPIs, Real MySQL Data, Live Bookings, Pending Job Cards
+     ========================================================= -->
+<section class="py-5" id="command-centre">
+  <div class="luxury-container">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+      <div>
+        <span class="badge bg-dark text-white px-2 py-1 text-uppercase tracking-wider small mb-1">
+          <i class="bi bi-database-check text-success me-1"></i> Live MySQL Database CRUD Operations
+        </span>
+        <h3 class="fw-bold m-0" style="color: #000000; letter-spacing: -0.5px;">Workshop Command Operations</h3>
+      </div>
+      <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+        <a href="{{ url_for('add_customer') }}" class="btn btn-sm btn-outline-dark" title="Create Customer Record">
+          <i class="bi bi-person-plus me-1"></i> + Customer
+        </a>
+        <a href="{{ url_for('add_vehicle') }}" class="btn btn-sm btn-outline-dark" title="Register Vehicle & VIN">
+          <i class="bi bi-car-front me-1"></i> + Vehicle & VIN
+        </a>
+        <a href="{{ url_for('add_booking') }}" class="btn btn-sm btn-outline-dark" title="Schedule Service Booking">
+          <i class="bi bi-calendar-plus me-1"></i> + Booking
+        </a>
+        <a href="{{ url_for('add_job_card') }}" class="btn btn-sm btn-outline-dark" title="Issue Workshop Job Card">
+          <i class="bi bi-clipboard-plus me-1"></i> + Job Card
+        </a>
+        <a href="{{ url_for('add_spare_part') }}" class="btn btn-sm btn-outline-dark" title="Add Part to Inventory">
+          <i class="bi bi-box-seam me-1"></i> + Spare Part
+        </a>
+        <a href="{{ url_for('add_invoice') }}" class="btn btn-sm btn-outline-dark" title="Generate Customer Invoice">
+          <i class="bi bi-receipt me-1"></i> + Invoice
+        </a>
+        <a href="{{ url_for('add_mechanic') }}" class="btn btn-sm btn-dark" title="Register Workshop Technician">
+          <i class="bi bi-person-gear me-1"></i> + Technician
+        </a>
+      </div>
+    </div>
+
+    <!-- 8 Real MySQL Statistics Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Total Customers</div>
+          <div class="stat-value">{{ stats.total_customers }}</div>
+          <a href="{{ url_for('customers') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            View Directory <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Registered Fleet</div>
+          <div class="stat-value">{{ stats.total_vehicles }}</div>
+          <a href="{{ url_for('vehicles') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            View Fleet & VINs <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Total Bookings</div>
+          <div class="stat-value">{{ stats.total_bookings }}</div>
+          <a href="{{ url_for('bookings') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            Service Schedule <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Pending Job Cards</div>
+          <div class="stat-value text-warning">{{ stats.pending_jobs }}</div>
+          <a href="{{ url_for('job_cards') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            Workshop Floor <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Available Technicians</div>
+          <div class="stat-value text-success">{{ stats.available_mechanics }}</div>
+          <a href="{{ url_for('mechanics') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            Technician Roster <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Spare Parts Catalog</div>
+          <div class="stat-value">{{ stats.total_spare_parts }}</div>
+          <a href="{{ url_for('spare_parts') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            Inventory Stock <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Unpaid Invoices</div>
+          <div class="stat-value text-danger">{{ stats.unpaid_invoices }}</div>
+          <a href="{{ url_for('invoices') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            Billing Queue <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="luxury-stat-card">
+          <div class="stat-label">Total Realized Revenue</div>
+          <div class="stat-value text-dark">₹{{ "{:,.2f}".format(stats.paid_revenue) }}</div>
+          <a href="{{ url_for('reports') }}" class="text-decoration-none text-muted small mt-2 d-inline-block">
+            Financial Audit <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Tables Section -->
+    <div class="row g-4">
+      <!-- Recent Bookings Table -->
+      <div class="col-lg-7">
+        <div class="luxury-card h-100">
+          <div class="luxury-card-header">
+            <h4 class="luxury-card-title">
+              <i class="bi bi-calendar3 me-1"></i> Recent Service Appointments
+            </h4>
+            <a href="{{ url_for('bookings') }}" class="text-dark small fw-semibold text-decoration-none">
+              View All <i class="bi bi-chevron-right"></i>
+            </a>
+          </div>
+          <div class="table-responsive">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Vehicle & VIN</th>
+                  <th>Service Type</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if recent_bookings %}
+                  {% for b in recent_bookings %}
+                    <tr>
+                      <td>
+                        <div class="fw-bold">{{ b.customer_name }}</div>
+                        <small class="text-muted">{{ b.customer_phone }}</small>
+                      </td>
+                      <td>
+                        <span class="reg-plate">{{ b.registration_no }}</span>
+                        <div class="text-muted small mt-1">{{ b.make }} {{ b.model }}</div>
+                        {% if b.vin %}
+                          <small class="text-secondary font-monospace d-block" style="font-size: 0.72rem;">VIN: {{ b.vin }}</small>
+                        {% endif %}
+                      </td>
+                      <td>{{ b.service_type }}</td>
+                      <td>{{ b.booking_date }}</td>
+                      <td>
+                        <span class="badge-status status-{{ b.status.lower().replace(' ', '') }}">
+                          {{ b.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">No recent bookings.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Workshop Job Cards -->
+      <div class="col-lg-5">
+        <div class="luxury-card h-100">
+          <div class="luxury-card-header">
+            <h4 class="luxury-card-title">
+              <i class="bi bi-tools me-1 text-warning"></i> Open Workshop Jobs
+            </h4>
+            <a href="{{ url_for('job_cards') }}" class="text-dark small fw-semibold text-decoration-none">
+              All Jobs <i class="bi bi-chevron-right"></i>
+            </a>
+          </div>
+          <div class="table-responsive">
+            <table class="luxury-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Vehicle & Owner</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if pending_jobs %}
+                  {% for job in pending_jobs %}
+                    <tr>
+                      <td><span class="badge bg-light text-dark border">#{{ job.job_card_id }}</span></td>
+                      <td>
+                        <span class="reg-plate">{{ job.registration_no }}</span>
+                        <div class="small fw-semibold mt-1">{{ job.customer_name }}</div>
+                      </td>
+                      <td>
+                        <div class="text-truncate" style="max-width: 170px;" title="{{ job.job_description }}">
+                          {{ job.job_description }}
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge-status status-pending">{{ job.status }}</span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="4" class="text-center py-4 text-muted">No pending workshop jobs.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

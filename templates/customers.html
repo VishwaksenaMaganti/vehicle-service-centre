@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Customers | Luxury Service Portal{% endblock %}
+
+{% block content %}
+<div class="luxury-container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <span class="badge bg-dark text-white px-2 py-1 text-uppercase tracking-wider small mb-1">Client Management</span>
+      <h3 class="fw-bold m-0" style="color: #000000; letter-spacing: -0.5px;">Customer Directory</h3>
+    </div>
+    <div class="d-flex gap-2">
+      <!-- Search Form -->
+      <form method="GET" action="{{ url_for('customers') }}" class="d-flex gap-2">
+        <input type="text" name="search" value="{{ search_query }}" class="form-control form-control-custom" placeholder="Search name or phone..." style="max-width: 240px;">
+        {% if search_query %}
+          <a href="{{ url_for('customers') }}" class="btn btn-outline-secondary" title="Clear Search">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        {% endif %}
+        <button type="submit" class="btn btn-dark">Search</button>
+      </form>
+
+      <!-- Add Customer Button -->
+      <a href="{{ url_for('add_customer') }}" class="btn btn-dark">
+        <i class="bi bi-person-plus me-1"></i> Add Client
+      </a>
+    </div>
+  </div>
+
+  <div class="luxury-card">
+    <div class="luxury-card-header">
+      <h4 class="luxury-card-title">
+        <i class="bi bi-people-fill me-2"></i> Registered Owners & Corporate Accounts
+      </h4>
+      <span class="badge bg-light text-dark border">{{ customers|length }} Clients</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="luxury-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Client Name</th>
+            <th>Contact Phone</th>
+            <th>Email Address</th>
+            <th>Enrolled Vehicles</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if customers %}
+            {% for c in customers %}
+              <tr>
+                <td><span class="badge bg-light text-dark border">#{{ c.customer_id }}</span></td>
+                <td>
+                  <div class="fw-bold text-dark">{{ c.name }}</div>
+                </td>
+                <td>
+                  {% if c.phone %}
+                    <span><i class="bi bi-telephone text-muted me-1"></i>{{ c.phone }}</span>
+                  {% else %}
+                    <span class="text-muted fst-italic">Not provided</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if c.email %}
+                    <span><i class="bi bi-envelope text-muted me-1"></i>{{ c.email }}</span>
+                  {% else %}
+                    <span class="text-muted fst-italic">Not provided</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="badge bg-dark text-white">
+                    <i class="bi bi-car-front me-1"></i>{{ c.vehicle_count or 0 }} Vehicles
+                  </span>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <a href="{{ url_for('edit_customer', id=c.customer_id) }}" class="btn btn-sm btn-outline-dark" title="Edit Customer">
+                      <i class="bi bi-pencil-square"></i> Edit
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_customer', id=c.customer_id) }}" class="delete-form d-inline" data-item-type="Customer" data-item-name="{{ c.name }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Customer">
+                        <i class="bi bi-trash3"></i> Delete
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-5">
+                <div class="text-muted mb-2"><i class="bi bi-person-x fs-1"></i></div>
+                <h5 class="fw-bold text-secondary">No Clients Found</h5>
+                <p class="text-muted small">Register a customer to enroll luxury vehicles.</p>
+                <a href="{{ url_for('add_customer') }}" class="btn btn-sm btn-dark mt-2">
+                  <i class="bi bi-person-plus me-1"></i> Add First Client
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
