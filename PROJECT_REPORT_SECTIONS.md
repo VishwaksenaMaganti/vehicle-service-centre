@@ -1,6 +1,16 @@
 # VEHICLE SERVICE CENTRE MANAGEMENT SYSTEM
 ## College DBMS Project Documentation
 
+| Project Attribute | Details |
+|---|---|
+| **Project Title** | AutoCare Precision · Vehicle Service Centre Management System |
+| **Database Engine** | MySQL 8.0 Community Server (InnoDB Storage Engine) |
+| **Database Name** | `vehicle_service_centre` |
+| **Application Stack** | Python 3 (Flask Framework) + Bootstrap 5.3 + JavaScript |
+| **GitHub Repository** | [https://github.com/VishwaksenaMaganti/vehicle-service-centre](https://github.com/VishwaksenaMaganti/vehicle-service-centre) |
+| **Repository Branch** | `main` |
+| **Version** | Version 1.0 (Production / Academic Evaluation Ready) |
+
 ---
 
 # 5.12 APPLICATION MODULES
@@ -390,5 +400,30 @@ Below are the actual high-resolution screenshots of the implemented **Vehicle Se
 ![Figure 19. Application Performance Benchmark Graph](screenshots/application_performance_graph.png)
 
 *Figure 19 presents an end-to-end performance diagnostic and scalability benchmark of the Vehicle Service Centre Management System on a pure white background. It analyzes: (1) module response latency breakdown between MySQL relational query execution and Flask WSGI server rendering, (2) concurrency stress testing demonstrating throughput scaling up to 720 requests/second with low response latency, (3) percentile SLA response distribution (p50=48ms, p99=104ms), and (4) holistic execution budget allocation showing 54% database engine efficiency, 32% application processing, and 14% network transmission.*
+
+---
+---
+
+# 5.16 SOURCE CODE REPOSITORY & VERIFICATION
+
+The complete codebase, database schema scripts, benchmark suite, and documentation for the **Vehicle Service Centre Management System** are hosted on GitHub:
+
+* **Official GitHub Repository:** [https://github.com/VishwaksenaMaganti/vehicle-service-centre](https://github.com/VishwaksenaMaganti/vehicle-service-centre)
+* **Default Branch:** `main`
+* **Repository Contents:**
+  * `vehicle_service_centre.sql`: Complete MySQL DDL definitions, primary & foreign key constraints, and seed records.
+  * `app.py`: Flask application server with modular routing, input validation, and parameterized query execution.
+  * `database.py`: Centralized transaction management, connection pooling, and atomic rollback handlers.
+  * `templates/` & `static/`: Responsive Bootstrap 5.3 frontend layouts, VIN dossier modals, and automotive styling.
+  * `screenshots/`: Actual high-resolution system interface captures (Figures 8 through 19).
+  * `run_app.bat`: One-click execution launcher for Windows environments.
+
+**Clone & Run Command:**
+```bash
+git clone https://github.com/VishwaksenaMaganti/vehicle-service-centre.git
+cd vehicle-service-centre
+run_app.bat
+```
+
 
 
