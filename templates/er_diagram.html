@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Entity-Relationship (ER) Diagram - Vehicle Service Centre</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      padding: 30px;
+      width: 1400px;
+      margin: 0 auto;
+    }
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .badge-bar {
+      display: flex;
+      gap: 10px;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .badge.highlight {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+
+    /* Diagram Canvas */
+    .diagram-container {
+      position: relative;
+      width: 1340px;
+      height: 720px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    /* Entity Table Card */
+    .entity-card {
+      position: absolute;
+      width: 250px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      font-size: 12px;
+      z-index: 2;
+    }
+    .entity-header {
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      letter-spacing: 0.3px;
+    }
+    .header-customer { background: #e11d48; }    /* Rose */
+    .header-vehicle { background: #8b5cf6; }     /* Purple */
+    .header-booking { background: #3b82f6; }     /* Blue */
+    .header-jobcard { background: #0284c7; }     /* Sky Blue */
+    .header-invoice { background: #16a34a; }     /* Green */
+    .header-mechanic { background: #0d9488; }    /* Teal */
+    .header-sparepart { background: #ea580c; }   /* Orange */
+
+    .entity-body {
+      padding: 6px 0;
+      background: #ffffff;
+    }
+    .attr-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 12px;
+      border-bottom: 1px solid #f8fafc;
+    }
+    .attr-row:last-child {
+      border-bottom: none;
+    }
+    .attr-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      color: #1e293b;
+    }
+    .attr-name.pk {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .attr-name.fk {
+      font-weight: 600;
+      color: #2563eb;
+    }
+    .attr-type {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 11px;
+      color: #64748b;
+    }
+    .key-badge {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .badge-pk { background: #fef08a; color: #854d0e; }
+    .badge-fk { background: #dbeafe; color: #1e40af; }
+    .badge-uq { background: #e0e7ff; color: #3730a3; }
+
+    /* SVG Lines Overlay */
+    .connections-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1340px;
+      height: 720px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Footer Legend */
+    .legend-box {
+      margin-top: 16px;
+      padding: 10px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: #475569;
+    }
+    .legend-items {
+      display: flex;
+      gap: 18px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>Relational Entity-Relationship (ER) Schema</h1>
+      <p>Vehicle Service Centre Management System &bull; MySQL 8.0 Relational Model & Referential Integrity Architecture</p>
+    </div>
+    <div class="badge-bar">
+      <span class="badge">7 Normalized Tables (3NF)</span>
+      <span class="badge">Referential Integrity (ON UPDATE CASCADE / ON DELETE RESTRICT)</span>
+      <span class="badge highlight">Crow's Foot Notation</span>
+    </div>
+  </div>
+
+  <!-- Diagram Canvas -->
+  <div class="diagram-container">
+
+    <!-- ==================== ENTITY CARDS ==================== -->
+
+    <!-- 1. CUSTOMER -->
+    <!-- Position: X=40, Y=50 -->
+    <div class="entity-card" style="left: 40px; top: 60px; width: 240px;">
+      <div class="entity-header header-customer">
+        <span>Customer</span>
+        <span style="font-size: 10px; opacity: 0.9;">1 (Parent)</span>
+      </div>
+      <div class="entity-body">
+        <div class="attr-row">
+          <span class="attr-name pk"><span class="key-badge badge-pk">PK</span> customer_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">name</span>
+          <span class="attr-type">VARCHAR(100)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">phone</span>
+          <span class="attr-type">VARCHAR(15)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">email</span>
+          <span class="attr-type">VARCHAR(100)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. VEHICLE -->
+    <!-- Position: X=350, Y=40 -->
+    <div class="entity-card" style="left: 360px; top: 40px; width: 270px;">
+      <div class="entity-header header-vehicle">
+        <span>Vehicle</span>
+        <span style="font-size: 10px; opacity: 0.9;">N (Child) / 1 (Parent)</span>
+      </div>
+      <div class="entity-body">
+        <div class="attr-row">
+          <span class="attr-name pk"><span class="key-badge badge-pk">PK</span> vehicle_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name fk"><span class="key-badge badge-fk">FK</span> customer_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name"><span class="key-badge badge-uq">UQ</span> registration_no</span>
+          <span class="attr-type">VARCHAR(20)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">vin</span>
+          <span class="attr-type">VARCHAR(30)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">make</span>
+          <span class="attr-type">VARCHAR(50)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">model</span>
+          <span class="attr-type">VARCHAR(50)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">model_number</span>
+          <span class="attr-type">VARCHAR(50)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">warranty_details</span>
+          <span class="attr-type">VARCHAR(100)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SERVICE BOOKING -->
+    <!-- Position: X=710, Y=60 -->
+    <div class="entity-card" style="left: 710px; top: 60px; width: 260px;">
+      <div class="entity-header header-booking">
+        <span>Service_Booking</span>
+        <span style="font-size: 10px; opacity: 0.9;">N (Child) / 1 (Parent)</span>
+      </div>
+      <div class="entity-body">
+        <div class="attr-row">
+          <span class="attr-name pk"><span class="key-badge badge-pk">PK</span> booking_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name fk"><span class="key-badge badge-fk">FK</span> vehicle_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">booking_date</span>
+          <span class="attr-type">DATE</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">service_type</span>
+          <span class="attr-type">VARCHAR(100)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">status</span>
+          <span class="attr-type">VARCHAR(30)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. JOB CARD -->
+    <!-- Position: X=1040, Y=60 -->
+    <div class="entity-card" style="left: 1045px; top: 60px; width: 255px;">
+      <div class="entity-header header-jobcard">
+        <span>Job_Card</span>
+        <span style="font-size: 10px; opacity: 0.9;">1:1 / 1:N</span>
+      </div>
+      <div class="entity-body">
+        <div class="attr-row">
+          <span class="attr-name pk"><span class="key-badge badge-pk">PK</span> job_card_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name fk"><span class="key-badge badge-fk">FK</span> booking_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">job_description</span>
+          <span class="attr-type">VARCHAR(255)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">status</span>
+          <span class="attr-type">VARCHAR(30)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. INVOICE -->
+    <!-- Position: X=1045, Y=380 -->
+    <div class="entity-card" style="left: 1045px; top: 380px; width: 255px;">
+      <div class="entity-header header-invoice">
+        <span>Invoice</span>
+        <span style="font-size: 10px; opacity: 0.9;">1:1 Settlement</span>
+      </div>
+      <div class="entity-body">
+        <div class="attr-row">
+          <span class="attr-name pk"><span class="key-badge badge-pk">PK</span> invoice_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name fk"><span class="key-badge badge-fk">FK</span> job_card_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">invoice_date</span>
+          <span class="attr-type">DATE</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">total_amount</span>
+          <span class="attr-type">DECIMAL(10,2)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">status</span>
+          <span class="attr-type">VARCHAR(30)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. MECHANIC -->
+    <!-- Position: X=710, Y=380 -->
+    <div class="entity-card" style="left: 710px; top: 380px; width: 260px;">
+      <div class="entity-header header-mechanic">
+        <span>Mechanic</span>
+        <span style="font-size: 10px; opacity: 0.9;">Workshop Staff</span>
+      </div>
+      <div class="entity-body">
+        <div class="attr-row">
+          <span class="attr-name pk"><span class="key-badge badge-pk">PK</span> mechanic_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">name</span>
+          <span class="attr-type">VARCHAR(100)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">specialization</span>
+          <span class="attr-type">VARCHAR(100)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">phone</span>
+          <span class="attr-type">VARCHAR(15)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">status</span>
+          <span class="attr-type">VARCHAR(30)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. SPARE PART -->
+    <!-- Position: X=360, Y=380 -->
+    <div class="entity-card" style="left: 360px; top: 380px; width: 270px;">
+      <div class="entity-header header-sparepart">
+        <span>Spare_Part</span>
+        <span style="font-size: 10px; opacity: 0.9;">Warehouse Catalog</span>
+      </div>
+      <div class="entity-body">
+        <div class="attr-row">
+          <span class="attr-name pk"><span class="key-badge badge-pk">PK</span> part_id</span>
+          <span class="attr-type">INT</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">part_name</span>
+          <span class="attr-type">VARCHAR(100)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">price</span>
+          <span class="attr-type">DECIMAL(10,2)</span>
+        </div>
+        <div class="attr-row">
+          <span class="attr-name">stock_quantity</span>
+          <span class="attr-type">INT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SVG CONNECTIONS OVERLAY ==================== -->
+    <svg class="connections-svg" viewBox="0 0 1340 720">
+      <defs>
+        <!-- Arrowhead / crow's foot markers -->
+        <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
+          <circle cx="5" cy="5" r="4" fill="#3b82f6"/>
+        </marker>
+      </defs>
+
+      <!-- 1. Customer -> Vehicle (1 to Many) -->
+      <!-- Customer right edge: (280, 115) -> Vehicle left edge: (360, 100) -->
+      <path d="M 280 115 L 360 100" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+      <!-- One marker on Customer side (||) -->
+      <line x1="290" y1="108" x2="290" y2="122" stroke="#2563eb" stroke-width="2.5"/>
+      <line x1="296" y1="107" x2="296" y2="121" stroke="#2563eb" stroke-width="2.5"/>
+      <!-- Crow's foot on Vehicle side (<) -->
+      <path d="M 360 100 L 348 93 M 360 100 L 348 107" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+      <text x="312" y="94" font-size="10.5" font-weight="700" fill="#1e40af">1 : N</text>
+      <text x="312" y="130" font-size="9.5" fill="#64748b">owns</text>
+
+      <!-- 2. Vehicle -> Service_Booking (1 to Many) -->
+      <!-- Vehicle right edge: (630, 105) -> Booking left edge: (710, 115) -->
+      <path d="M 630 105 L 710 115" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+      <!-- One marker on Vehicle side (||) -->
+      <line x1="640" y1="99" x2="640" y2="113" stroke="#2563eb" stroke-width="2.5"/>
+      <line x1="646" y1="100" x2="646" y2="114" stroke="#2563eb" stroke-width="2.5"/>
+      <!-- Crow's foot on Booking side (<) -->
+      <path d="M 710 115 L 698 108 M 710 115 L 698 122" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+      <text x="662" y="96" font-size="10.5" font-weight="700" fill="#1e40af">1 : N</text>
+      <text x="657" y="132" font-size="9.5" fill="#64748b">scheduled</text>
+
+      <!-- 3. Service_Booking -> Job_Card (1 to 1) -->
+      <!-- Booking right edge: (970, 115) -> Job_Card left edge: (1045, 115) -->
+      <path d="M 970 115 L 1045 115" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+      <!-- One marker on Booking side (||) -->
+      <line x1="980" y1="108" x2="980" y2="122" stroke="#2563eb" stroke-width="2.5"/>
+      <line x1="986" y1="108" x2="986" y2="122" stroke="#2563eb" stroke-width="2.5"/>
+      <!-- One marker on Job Card side (||) -->
+      <line x1="1030" y1="108" x2="1030" y2="122" stroke="#2563eb" stroke-width="2.5"/>
+      <line x1="1036" y1="108" x2="1036" y2="122" stroke="#2563eb" stroke-width="2.5"/>
+      <text x="1000" y="103" font-size="10.5" font-weight="700" fill="#1e40af">1 : 1</text>
+      <text x="996" y="132" font-size="9.5" fill="#64748b">creates</text>
+
+      <!-- 4. Job_Card -> Invoice (1 to 1) -->
+      <!-- Job_Card bottom center: (1172, 230) -> Invoice top center: (1172, 380) -->
+      <path d="M 1172 230 L 1172 380" stroke="#16a34a" stroke-width="2.5" fill="none"/>
+      <!-- One marker on Job Card side -->
+      <line x1="1165" y1="242" x2="1179" y2="242" stroke="#16a34a" stroke-width="2.5"/>
+      <line x1="1165" y1="248" x2="1179" y2="248" stroke="#16a34a" stroke-width="2.5"/>
+      <!-- One marker on Invoice side -->
+      <line x1="1165" y1="365" x2="1179" y2="365" stroke="#16a34a" stroke-width="2.5"/>
+      <line x1="1165" y1="371" x2="1179" y2="371" stroke="#16a34a" stroke-width="2.5"/>
+      <text x="1182" y="305" font-size="10.5" font-weight="700" fill="#15803d">1 : 1</text>
+      <text x="1182" y="320" font-size="9.5" fill="#64748b">bills for</text>
+
+      <!-- 5. Mechanic -> Job_Card (Assigned To: 1 to Many) -->
+      <!-- Mechanic top-right: (970, 420) -> goes up and right into Job_Card: (1045, 180) -->
+      <path d="M 970 420 L 1005 420 L 1005 180 L 1045 180" stroke="#0d9488" stroke-width="2" stroke-dasharray="4,3" fill="none"/>
+      <!-- Crow's foot at Job Card -->
+      <path d="M 1045 180 L 1033 174 M 1045 180 L 1033 186" stroke="#0d9488" stroke-width="2" fill="none"/>
+      <text x="965" y="340" font-size="10" font-weight="700" fill="#0f766e">1 : N</text>
+      <text x="955" y="355" font-size="9.5" fill="#64748b">assigned</text>
+
+      <!-- 6. Spare_Part -> Job_Card (Parts Allocated: Many to Many) -->
+      <!-- Spare_Part right: (630, 420) -> runs horizontal across bottom then up into Job_Card -->
+      <path d="M 630 420 L 670 420 M 970 470 L 1025 470 L 1025 210 L 1045 210" stroke="#ea580c" stroke-width="2" stroke-dasharray="4,3" fill="none"/>
+      <text x="640" y="440" font-size="9.5" fill="#ea580c">allocates</text>
+
+      <!-- Operational Flow Indicator Header at top -->
+      <rect x="40" y="16" width="1260" height="20" fill="#f8fafc" rx="4" stroke="#e2e8f0"/>
+      <text x="50" y="30" font-size="10.5" font-weight="700" fill="#475569">PRIMARY OPERATIONAL WORKFLOW PIPELINE:</text>
+      <text x="310" y="30" font-size="10.5" font-weight="600" fill="#e11d48">1. Register Owner</text>
+      <text x="420" y="30" font-size="10.5" fill="#94a3b8">&rarr;</text>
+      <text x="440" y="30" font-size="10.5" font-weight="600" fill="#8b5cf6">2. Enroll Vehicle & VIN</text>
+      <text x="585" y="30" font-size="10.5" fill="#94a3b8">&rarr;</text>
+      <text x="605" y="30" font-size="10.5" font-weight="600" fill="#3b82f6">3. Book Service</text>
+      <text x="715" y="30" font-size="10.5" fill="#94a3b8">&rarr;</text>
+      <text x="735" y="30" font-size="10.5" font-weight="600" fill="#0284c7">4. Issue Job Card & Assign Tech</text>
+      <text x="940" y="30" font-size="10.5" fill="#94a3b8">&rarr;</text>
+      <text x="960" y="30" font-size="10.5" font-weight="600" fill="#16a34a">5. Generate Invoice & Settle</text>
+    </svg>
+
+  </div>
+
+  <!-- Legend -->
+  <div class="legend-box">
+    <div class="legend-items">
+      <div class="legend-item"><span class="key-badge badge-pk">PK</span> Primary Key (AUTO_INCREMENT)</div>
+      <div class="legend-item"><span class="key-badge badge-fk">FK</span> Foreign Key (Relational Constraint)</div>
+      <div class="legend-item"><span class="key-badge badge-uq">UQ</span> Unique Index (No Duplicates)</div>
+      <div class="legend-item"><span style="color: #2563eb; font-weight: bold;">&mdash;&mdash;</span> Mandatory Operational Constraint</div>
+      <div class="legend-item"><span style="color: #0d9488; font-weight: bold;">- - -</span> Resource Allocation Association</div>
+    </div>
+    <div style="font-weight: 600; color: #64748b;">
+      AutoCare Precision DBMS &bull; Relational Integrity Schema
+    </div>
+  </div>
+
+</body>
+</html>
