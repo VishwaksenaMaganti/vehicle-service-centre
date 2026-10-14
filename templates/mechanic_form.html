@@ -22,8 +22,8 @@
             <!-- Name -->
             <div class="mb-3">
               <label for="name" class="form-label-custom">Technician Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control form-control-custom" id="name" name="name" value="{{ mechanic.name if mechanic else '' }}" placeholder="e.g. Ramesh Kumar" required maxlength="100">
-              <div class="form-text">Full name of the certified technician.</div>
+              <input type="text" class="form-control form-control-custom" id="name" name="name" value="{{ mechanic.name if mechanic else '' }}" placeholder="e.g. Ramesh Kumar" required minlength="2" maxlength="100">
+              <div class="form-text">Full name of the certified technician (2-100 characters).</div>
             </div>
 
             <!-- Specialization & Phone -->
@@ -39,10 +39,15 @@
                   <option value="Carbon Ceramic Brake Specialist">
                   <option value="Active Suspension & Dynamic Calibration">
                 </datalist>
+                <div class="form-text">Primary diagnostic or engineering domain.</div>
               </div>
               <div class="col-md-6">
-                <label for="phone" class="form-label-custom">Direct Extension / Phone</label>
-                <input type="tel" class="form-control form-control-custom" id="phone" name="phone" value="{{ mechanic.phone if mechanic else '' }}" placeholder="e.g. 9877001122" maxlength="15">
+                <label for="phone" class="form-label-custom">Direct Phone (10 Digits)</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted">+91</span>
+                  <input type="tel" class="form-control form-control-custom" id="phone" name="phone" value="{{ mechanic.phone if mechanic else '' }}" placeholder="9877001122" minlength="10" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Phone number must be exactly 10 numeric digits">
+                </div>
+                <div class="form-text text-danger-emphasis small"><i class="bi bi-shield-check text-success me-1"></i>Must be exactly 10 numeric digits (cannot exceed 10 digits).</div>
               </div>
             </div>
 

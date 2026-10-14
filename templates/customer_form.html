@@ -21,15 +21,18 @@
           <form method="POST" action="{{ url_for('edit_customer', id=customer.customer_id) if action == 'edit' else url_for('add_customer') }}">
             <div class="mb-3">
               <label for="name" class="form-label-custom">Full Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control form-control-custom" id="name" name="name" value="{{ customer.name if customer else '' }}" placeholder="e.g. Rahul Kumar" required>
-              <div class="form-text">Primary vehicle owner or corporate account representative.</div>
+              <input type="text" class="form-control form-control-custom" id="name" name="name" value="{{ customer.name if customer else '' }}" placeholder="e.g. Rahul Kumar" required minlength="2" maxlength="100">
+              <div class="form-text">Primary vehicle owner or corporate account representative (2-100 characters).</div>
             </div>
 
             <div class="row mb-3">
               <div class="col-md-6">
-                <label for="phone" class="form-label-custom">Phone Number</label>
-                <input type="tel" class="form-control form-control-custom" id="phone" name="phone" value="{{ customer.phone if customer else '' }}" placeholder="e.g. 9876543210" maxlength="15">
-                <div class="form-text">Direct mobile contact for live status updates.</div>
+                <label for="phone" class="form-label-custom">Phone Number (10 Digits)</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted">+91</span>
+                  <input type="tel" class="form-control form-control-custom" id="phone" name="phone" value="{{ customer.phone if customer else '' }}" placeholder="9876543210" minlength="10" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" title="Phone number must be exactly 10 numeric digits">
+                </div>
+                <div class="form-text text-danger-emphasis small"><i class="bi bi-shield-check text-success me-1"></i>Must be exactly 10 numeric digits (cannot exceed 10 digits).</div>
               </div>
               <div class="col-md-6">
                 <label for="email" class="form-label-custom">Email Address</label>

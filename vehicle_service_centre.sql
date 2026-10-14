@@ -17,7 +17,7 @@ USE vehicle_service_centre;
 CREATE TABLE IF NOT EXISTS Customer (
     customer_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    phone VARCHAR(15),
+    phone VARCHAR(10),
     email VARCHAR(100)
 );
 
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS Mechanic (
     mechanic_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     specialization VARCHAR(100),
-    phone VARCHAR(15),
+    phone VARCHAR(10),
     status VARCHAR(30) NOT NULL DEFAULT 'Available'
 );
 

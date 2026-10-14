@@ -21,6 +21,17 @@ from database import (
     test_connection,
     get_recent_sql_logs
 )
+from validators import (
+    validate_phone,
+    validate_email,
+    validate_name,
+    validate_registration_no,
+    validate_vin,
+    validate_price,
+    validate_quantity,
+    validate_date_string,
+    validate_status
+)
 
 # Load environment configuration
 load_dotenv()
@@ -167,15 +178,28 @@ def add_customer():
         phone = request.form.get("phone", "").strip()
         email = request.form.get("email", "").strip()
 
-        # Validation: Name cannot be empty
-        if not name:
-            flash("Customer name is required and cannot be blank.", "danger")
-            return render_template("customer_form.html", active_page="customers", action="add")
+        # Validation: Name
+        valid_name, name_res = validate_name(name, "Customer Name", min_len=2, max_len=100)
+        if not valid_name:
+            flash(name_res, "danger")
+            return render_template("customer_form.html", active_page="customers", action="add", customer={"name": name, "phone": phone, "email": email})
+
+        # Validation: Phone (strictly cannot exceed 10 digits, must be exactly 10 digits if provided)
+        valid_phone, phone_res = validate_phone(phone, required=False)
+        if not valid_phone:
+            flash(phone_res, "danger")
+            return render_template("customer_form.html", active_page="customers", action="add", customer={"name": name, "phone": phone, "email": email})
+
+        # Validation: Email
+        valid_email, email_res = validate_email(email, required=False)
+        if not valid_email:
+            flash(email_res, "danger")
+            return render_template("customer_form.html", active_page="customers", action="add", customer={"name": name, "phone": phone, "email": email})
 
         try:
             sql = "INSERT INTO Customer (name, phone, email) VALUES (%s, %s, %s);"
-            execute_write_query(sql, (name, phone if phone else None, email if email else None))
-            flash(f"Customer '{name}' registered successfully!", "success")
+            execute_write_query(sql, (name_res, phone_res, email_res))
+            flash(f"Customer '{name_res}' registered successfully!", "success")
             return redirect(url_for("customers"))
         except mysql.connector.Error as err:
             flash(f"Database error while adding customer: {err}", "danger")
@@ -185,7 +209,7 @@ def add_customer():
 
 @app.route("/edit_customer/<int:id>", methods=["GET", "POST"])
 def edit_customer(id):
-    """Edit existing customer details."""
+    """Edit existing customer details with input validation."""
     try:
         customer = execute_read_query("SELECT * FROM Customer WHERE customer_id = %s;", (id,), fetch_one=True)
         if not customer:
@@ -197,12 +221,26 @@ def edit_customer(id):
             phone = request.form.get("phone", "").strip()
             email = request.form.get("email", "").strip()
 
-            if not name:
-                flash("Customer name cannot be empty.", "danger")
-                return render_template("customer_form.html", active_page="customers", action="edit", customer=customer)
+            # Validation: Name
+            valid_name, name_res = validate_name(name, "Customer Name", min_len=2, max_len=100)
+            if not valid_name:
+                flash(name_res, "danger")
+                return render_template("customer_form.html", active_page="customers", action="edit", customer={"customer_id": id, "name": name, "phone": phone, "email": email})
+
+            # Validation: Phone (strictly cannot exceed 10 digits)
+            valid_phone, phone_res = validate_phone(phone, required=False)
+            if not valid_phone:
+                flash(phone_res, "danger")
+                return render_template("customer_form.html", active_page="customers", action="edit", customer={"customer_id": id, "name": name, "phone": phone, "email": email})
+
+            # Validation: Email
+            valid_email, email_res = validate_email(email, required=False)
+            if not valid_email:
+                flash(email_res, "danger")
+                return render_template("customer_form.html", active_page="customers", action="edit", customer={"customer_id": id, "name": name, "phone": phone, "email": email})
 
             sql = "UPDATE Customer SET name = %s, phone = %s, email = %s WHERE customer_id = %s;"
-            execute_write_query(sql, (name, phone if phone else None, email if email else None, id))
+            execute_write_query(sql, (name_res, phone_res, email_res, id))
             flash(f"Customer #{id} updated successfully.", "success")
             return redirect(url_for("customers"))
 
@@ -353,13 +391,36 @@ def add_vehicle():
         model_number = request.form.get("model_number", "").strip()
         warranty_details = request.form.get("warranty_details", "").strip()
 
-        # Validation
-        if not customer_id or not registration_no:
-            flash("Customer and Registration Number are required fields.", "danger")
+        # Validation: Customer
+        if not customer_id:
+            flash("Please select an enrolled client / owner from the dropdown.", "danger")
+            return render_template("vehicle_form.html", active_page="vehicles", action="add", customers=customers_dropdown)
+
+        # Validation: Registration Number
+        valid_reg, reg_res = validate_registration_no(registration_no)
+        if not valid_reg:
+            flash(reg_res, "danger")
+            return render_template("vehicle_form.html", active_page="vehicles", action="add", customers=customers_dropdown)
+
+        # Validation: VIN
+        valid_vin, vin_res = validate_vin(vin, required=True)
+        if not valid_vin:
+            flash(vin_res, "danger")
+            return render_template("vehicle_form.html", active_page="vehicles", action="add", customers=customers_dropdown)
+
+        # Validation: Make & Model
+        valid_make, make_res = validate_name(make, "Manufacturer / Make", min_len=2, max_len=50)
+        if not valid_make:
+            flash(make_res, "danger")
+            return render_template("vehicle_form.html", active_page="vehicles", action="add", customers=customers_dropdown)
+
+        valid_model, model_res = validate_name(model, "Model Name", min_len=1, max_len=50)
+        if not valid_model:
+            flash(model_res, "danger")
             return render_template("vehicle_form.html", active_page="vehicles", action="add", customers=customers_dropdown)
 
         # Check duplicate registration number
-        dup = execute_read_query("SELECT vehicle_id FROM Vehicle WHERE registration_no = %s;", (registration_no,), fetch_one=True)
+        dup = execute_read_query("SELECT vehicle_id FROM Vehicle WHERE registration_no = %s;", (reg_res,), fetch_one=True)
         if dup:
             flash("Vehicle registration number already exists.", "danger")
             return render_template("vehicle_form.html", active_page="vehicles", action="add", customers=customers_dropdown)
@@ -371,10 +432,10 @@ def add_vehicle():
             """
             execute_write_query(
                 sql,
-                (customer_id, registration_no, vin or None, make or 'Multi-Brand', model or 'Standard',
+                (customer_id, reg_res, vin_res, make_res, model_res,
                  model_number or None, warranty_details or 'Active Standard Coverage')
             )
-            flash(f"Vehicle '{registration_no}' (VIN: {vin or 'N/A'}) registered successfully!", "success")
+            flash(f"Vehicle '{reg_res}' (VIN: {vin_res}) registered successfully!", "success")
             return redirect(url_for("vehicles"))
         except mysql.connector.Error as err:
             if err.errno == 1062:
@@ -405,18 +466,41 @@ def edit_vehicle(id):
             model_number = request.form.get("model_number", "").strip()
             warranty_details = request.form.get("warranty_details", "").strip()
 
-            if not customer_id or not registration_no:
-                flash("Customer and Registration Number are required.", "danger")
+            if not customer_id:
+                flash("Please select a registered client / owner.", "danger")
+                return render_template("vehicle_form.html", active_page="vehicles", action="edit", customers=customers_dropdown, vehicle=vehicle)
+
+            # Validation: Registration Number
+            valid_reg, reg_res = validate_registration_no(registration_no)
+            if not valid_reg:
+                flash(reg_res, "danger")
+                return render_template("vehicle_form.html", active_page="vehicles", action="edit", customers=customers_dropdown, vehicle=vehicle)
+
+            # Validation: VIN
+            valid_vin, vin_res = validate_vin(vin, required=True)
+            if not valid_vin:
+                flash(vin_res, "danger")
+                return render_template("vehicle_form.html", active_page="vehicles", action="edit", customers=customers_dropdown, vehicle=vehicle)
+
+            # Validation: Make & Model
+            valid_make, make_res = validate_name(make, "Manufacturer / Make", min_len=2, max_len=50)
+            if not valid_make:
+                flash(make_res, "danger")
+                return render_template("vehicle_form.html", active_page="vehicles", action="edit", customers=customers_dropdown, vehicle=vehicle)
+
+            valid_model, model_res = validate_name(model, "Model Name", min_len=1, max_len=50)
+            if not valid_model:
+                flash(model_res, "danger")
                 return render_template("vehicle_form.html", active_page="vehicles", action="edit", customers=customers_dropdown, vehicle=vehicle)
 
             # Check duplicate registration on other vehicle IDs
             dup = execute_read_query(
                 "SELECT vehicle_id FROM Vehicle WHERE registration_no = %s AND vehicle_id != %s;",
-                (registration_no, id),
+                (reg_res, id),
                 fetch_one=True
             )
             if dup:
-                flash("Vehicle registration number already exists.", "danger")
+                flash(f"Vehicle registration number '{reg_res}' already belongs to another vehicle.", "danger")
                 return render_template("vehicle_form.html", active_page="vehicles", action="edit", customers=customers_dropdown, vehicle=vehicle)
 
             sql = """
@@ -427,10 +511,10 @@ def edit_vehicle(id):
             """
             execute_write_query(
                 sql,
-                (customer_id, registration_no, vin or None, make, model,
+                (customer_id, reg_res, vin_res, make_res, model_res,
                  model_number or None, warranty_details or 'Active Standard Coverage', id)
             )
-            flash(f"Vehicle '{registration_no}' updated successfully.", "success")
+            flash(f"Vehicle '{reg_res}' updated successfully.", "success")
             return redirect(url_for("vehicles"))
 
         return render_template("vehicle_form.html", active_page="vehicles", action="edit", customers=customers_dropdown, vehicle=vehicle)
@@ -528,13 +612,28 @@ def add_booking():
         booking_date = request.form.get("booking_date", "").strip()
         status = request.form.get("status", "Booked").strip()
 
-        if not vehicle_id or not service_type or not booking_date:
-            flash("Vehicle, Service Type, and Booking Date are required.", "danger")
+        if not vehicle_id:
+            flash("Please select an enrolled vehicle.", "danger")
+            return render_template("booking_form.html", active_page="bookings", action="add", vehicles=vehicles_dropdown, default_date=today_str, selected_vehicle_id=selected_vehicle_id)
+
+        valid_st, st_res = validate_name(service_type, "Service Operation", min_len=2, max_len=100)
+        if not valid_st:
+            flash(st_res, "danger")
+            return render_template("booking_form.html", active_page="bookings", action="add", vehicles=vehicles_dropdown, default_date=today_str, selected_vehicle_id=selected_vehicle_id)
+
+        valid_dt, dt_res = validate_date_string(booking_date, "Scheduled Booking Date")
+        if not valid_dt:
+            flash(dt_res, "danger")
+            return render_template("booking_form.html", active_page="bookings", action="add", vehicles=vehicles_dropdown, default_date=today_str, selected_vehicle_id=selected_vehicle_id)
+
+        valid_stat, stat_res = validate_status(status, ['Booked', 'Confirmed', 'In Progress', 'Completed', 'Cancelled'], "Appointment Status")
+        if not valid_stat:
+            flash(stat_res, "danger")
             return render_template("booking_form.html", active_page="bookings", action="add", vehicles=vehicles_dropdown, default_date=today_str, selected_vehicle_id=selected_vehicle_id)
 
         try:
             sql = "INSERT INTO Service_Booking (vehicle_id, booking_date, service_type, status) VALUES (%s, %s, %s, %s);"
-            execute_write_query(sql, (vehicle_id, booking_date, service_type, status))
+            execute_write_query(sql, (vehicle_id, dt_res, st_res, stat_res))
             flash("Service booking confirmed successfully!", "success")
             return redirect(url_for("bookings"))
         except mysql.connector.Error as err:
@@ -565,12 +664,27 @@ def edit_booking(id):
             booking_date = request.form.get("booking_date", "").strip()
             status = request.form.get("status", "Booked").strip()
 
-            if not vehicle_id or not service_type or not booking_date:
-                flash("Please fill in all required booking fields.", "danger")
+            if not vehicle_id:
+                flash("Please select an enrolled vehicle.", "danger")
+                return render_template("booking_form.html", active_page="bookings", action="edit", vehicles=vehicles_dropdown, booking=booking)
+
+            valid_st, st_res = validate_name(service_type, "Service Operation", min_len=2, max_len=100)
+            if not valid_st:
+                flash(st_res, "danger")
+                return render_template("booking_form.html", active_page="bookings", action="edit", vehicles=vehicles_dropdown, booking=booking)
+
+            valid_dt, dt_res = validate_date_string(booking_date, "Scheduled Booking Date")
+            if not valid_dt:
+                flash(dt_res, "danger")
+                return render_template("booking_form.html", active_page="bookings", action="edit", vehicles=vehicles_dropdown, booking=booking)
+
+            valid_stat, stat_res = validate_status(status, ['Booked', 'Confirmed', 'In Progress', 'Completed', 'Cancelled'], "Appointment Status")
+            if not valid_stat:
+                flash(stat_res, "danger")
                 return render_template("booking_form.html", active_page="bookings", action="edit", vehicles=vehicles_dropdown, booking=booking)
 
             sql = "UPDATE Service_Booking SET vehicle_id = %s, booking_date = %s, service_type = %s, status = %s WHERE booking_id = %s;"
-            execute_write_query(sql, (vehicle_id, booking_date, service_type, status, id))
+            execute_write_query(sql, (vehicle_id, dt_res, st_res, stat_res, id))
             flash(f"Booking #{id} updated successfully.", "success")
             return redirect(url_for("bookings"))
 
@@ -662,13 +776,23 @@ def add_job_card():
         job_description = request.form.get("job_description", "").strip()
         status = request.form.get("status", "Pending").strip()
 
-        if not booking_id or not job_description:
-            flash("Booking and Job Description are required.", "danger")
+        if not booking_id:
+            flash("Please select a linked service booking reference.", "danger")
+            return render_template("job_card_form.html", active_page="job_cards", action="add", bookings=bookings_dropdown)
+
+        valid_jd, jd_res = validate_name(job_description, "Technical Task & Instructions", min_len=5, max_len=255)
+        if not valid_jd:
+            flash(jd_res, "danger")
+            return render_template("job_card_form.html", active_page="job_cards", action="add", bookings=bookings_dropdown)
+
+        valid_stat, stat_res = validate_status(status, ['Pending', 'In Progress', 'Completed', 'Cancelled'], "Workshop Status")
+        if not valid_stat:
+            flash(stat_res, "danger")
             return render_template("job_card_form.html", active_page="job_cards", action="add", bookings=bookings_dropdown)
 
         try:
             sql = "INSERT INTO Job_Card (booking_id, job_description, status) VALUES (%s, %s, %s);"
-            execute_write_query(sql, (booking_id, job_description, status))
+            execute_write_query(sql, (booking_id, jd_res, stat_res))
             flash("Workshop job card issued successfully!", "success")
             return redirect(url_for("job_cards"))
         except mysql.connector.Error as err:
@@ -699,12 +823,22 @@ def edit_job_card(id):
             job_description = request.form.get("job_description", "").strip()
             status = request.form.get("status", "Pending").strip()
 
-            if not booking_id or not job_description:
-                flash("Please fill in all required job card fields.", "danger")
+            if not booking_id:
+                flash("Please select a valid service booking reference.", "danger")
+                return render_template("job_card_form.html", active_page="job_cards", action="edit", bookings=bookings_dropdown, job_card=job_card)
+
+            valid_jd, jd_res = validate_name(job_description, "Technical Task & Instructions", min_len=5, max_len=255)
+            if not valid_jd:
+                flash(jd_res, "danger")
+                return render_template("job_card_form.html", active_page="job_cards", action="edit", bookings=bookings_dropdown, job_card=job_card)
+
+            valid_stat, stat_res = validate_status(status, ['Pending', 'In Progress', 'Completed', 'Cancelled'], "Workshop Status")
+            if not valid_stat:
+                flash(stat_res, "danger")
                 return render_template("job_card_form.html", active_page="job_cards", action="edit", bookings=bookings_dropdown, job_card=job_card)
 
             sql = "UPDATE Job_Card SET booking_id = %s, job_description = %s, status = %s WHERE job_card_id = %s;"
-            execute_write_query(sql, (booking_id, job_description, status, id))
+            execute_write_query(sql, (booking_id, jd_res, stat_res, id))
             flash(f"Job Card #{id} updated successfully.", "success")
             return redirect(url_for("job_cards"))
 
@@ -769,21 +903,42 @@ def mechanics():
 
 @app.route("/add_mechanic", methods=["GET", "POST"])
 def add_mechanic():
-    """Register a new workshop mechanic/technician."""
+    """Register a new workshop mechanic/technician with input validation."""
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         specialization = request.form.get("specialization", "").strip()
         phone = request.form.get("phone", "").strip()
         status = request.form.get("status", "Available").strip()
 
-        if not name:
-            flash("Mechanic name is required.", "danger")
-            return render_template("mechanic_form.html", active_page="mechanics", action="add")
+        # Validation: Name
+        valid_name, name_res = validate_name(name, "Technician Name", min_len=2, max_len=100)
+        if not valid_name:
+            flash(name_res, "danger")
+            return render_template("mechanic_form.html", active_page="mechanics", action="add", mechanic={"name": name, "specialization": specialization, "phone": phone, "status": status})
+
+        # Validation: Phone (strictly max 10 digits, digits only)
+        valid_phone, phone_res = validate_phone(phone, required=False)
+        if not valid_phone:
+            flash(phone_res, "danger")
+            return render_template("mechanic_form.html", active_page="mechanics", action="add", mechanic={"name": name, "specialization": specialization, "phone": phone, "status": status})
+
+        # Validation: Specialization
+        spec_to_validate = specialization if specialization else "General Service Specialist"
+        valid_spec, spec_res = validate_name(spec_to_validate, "Engineering Specialization", min_len=2, max_len=100)
+        if not valid_spec:
+            flash(spec_res, "danger")
+            return render_template("mechanic_form.html", active_page="mechanics", action="add", mechanic={"name": name, "specialization": specialization, "phone": phone, "status": status})
+
+        # Validation: Status
+        valid_stat, stat_res = validate_status(status, ['Available', 'Busy', 'Unavailable', 'On Leave'], "Bay Availability Status")
+        if not valid_stat:
+            flash(stat_res, "danger")
+            return render_template("mechanic_form.html", active_page="mechanics", action="add", mechanic={"name": name, "specialization": specialization, "phone": phone, "status": status})
 
         try:
             sql = "INSERT INTO Mechanic (name, specialization, phone, status) VALUES (%s, %s, %s, %s);"
-            execute_write_query(sql, (name, specialization or 'General Service', phone if phone else None, status))
-            flash(f"Technician '{name}' registered successfully!", "success")
+            execute_write_query(sql, (name_res, spec_res, phone_res, stat_res))
+            flash(f"Technician '{name_res}' registered successfully!", "success")
             return redirect(url_for("mechanics"))
         except mysql.connector.Error as err:
             flash(f"Database error adding technician: {err}", "danger")
@@ -793,7 +948,7 @@ def add_mechanic():
 
 @app.route("/edit_mechanic/<int:id>", methods=["GET", "POST"])
 def edit_mechanic(id):
-    """Edit mechanic profile and status."""
+    """Edit mechanic profile and status with input validation."""
     try:
         mechanic = execute_read_query("SELECT * FROM Mechanic WHERE mechanic_id = %s;", (id,), fetch_one=True)
         if not mechanic:
@@ -806,12 +961,33 @@ def edit_mechanic(id):
             phone = request.form.get("phone", "").strip()
             status = request.form.get("status", "Available").strip()
 
-            if not name:
-                flash("Mechanic name cannot be empty.", "danger")
-                return render_template("mechanic_form.html", active_page="mechanics", action="edit", mechanic=mechanic)
+            # Validation: Name
+            valid_name, name_res = validate_name(name, "Technician Name", min_len=2, max_len=100)
+            if not valid_name:
+                flash(name_res, "danger")
+                return render_template("mechanic_form.html", active_page="mechanics", action="edit", mechanic={"mechanic_id": id, "name": name, "specialization": specialization, "phone": phone, "status": status})
+
+            # Validation: Phone (strictly max 10 digits)
+            valid_phone, phone_res = validate_phone(phone, required=False)
+            if not valid_phone:
+                flash(phone_res, "danger")
+                return render_template("mechanic_form.html", active_page="mechanics", action="edit", mechanic={"mechanic_id": id, "name": name, "specialization": specialization, "phone": phone, "status": status})
+
+            # Validation: Specialization
+            spec_to_validate = specialization if specialization else "General Service Specialist"
+            valid_spec, spec_res = validate_name(spec_to_validate, "Engineering Specialization", min_len=2, max_len=100)
+            if not valid_spec:
+                flash(spec_res, "danger")
+                return render_template("mechanic_form.html", active_page="mechanics", action="edit", mechanic={"mechanic_id": id, "name": name, "specialization": specialization, "phone": phone, "status": status})
+
+            # Validation: Status
+            valid_stat, stat_res = validate_status(status, ['Available', 'Busy', 'Unavailable', 'On Leave'], "Bay Availability Status")
+            if not valid_stat:
+                flash(stat_res, "danger")
+                return render_template("mechanic_form.html", active_page="mechanics", action="edit", mechanic={"mechanic_id": id, "name": name, "specialization": specialization, "phone": phone, "status": status})
 
             sql = "UPDATE Mechanic SET name = %s, specialization = %s, phone = %s, status = %s WHERE mechanic_id = %s;"
-            execute_write_query(sql, (name, specialization, phone if phone else None, status, id))
+            execute_write_query(sql, (name_res, spec_res, phone_res, stat_res, id))
             flash(f"Technician #{id} profile updated.", "success")
             return redirect(url_for("mechanics"))
 
@@ -866,24 +1042,28 @@ def add_spare_part():
         price_str = request.form.get("price", "0").strip()
         stock_str = request.form.get("stock_quantity", "0").strip()
 
-        if not part_name:
-            flash("Part name is required.", "danger")
-            return render_template("spare_part_form.html", active_page="spare_parts", action="add")
+        # Validation: Part Name
+        valid_pn, pn_res = validate_name(part_name, "Part Name", min_len=2, max_len=100)
+        if not valid_pn:
+            flash(pn_res, "danger")
+            return render_template("spare_part_form.html", active_page="spare_parts", action="add", spare_part={"part_name": part_name, "price": price_str, "stock_quantity": stock_str})
 
-        try:
-            price = float(price_str)
-            stock_quantity = int(stock_str)
-            if price < 0 or stock_quantity < 0:
-                flash("Price and stock quantity cannot be negative.", "danger")
-                return render_template("spare_part_form.html", active_page="spare_parts", action="add")
-        except ValueError:
-            flash("Please enter valid numeric values for price and stock.", "danger")
-            return render_template("spare_part_form.html", active_page="spare_parts", action="add")
+        # Validation: Price (positive decimal, max limit)
+        valid_price, price_res = validate_price(price_str, "Unit Price", min_val=0.01, max_val=10000000.0)
+        if not valid_price:
+            flash(price_res, "danger")
+            return render_template("spare_part_form.html", active_page="spare_parts", action="add", spare_part={"part_name": part_name, "price": price_str, "stock_quantity": stock_str})
+
+        # Validation: Stock Quantity (whole integer >= 0, max limit)
+        valid_qty, qty_res = validate_quantity(stock_str, "Stock Quantity", min_val=0, max_val=100000)
+        if not valid_qty:
+            flash(qty_res, "danger")
+            return render_template("spare_part_form.html", active_page="spare_parts", action="add", spare_part={"part_name": part_name, "price": price_str, "stock_quantity": stock_str})
 
         try:
             sql = "INSERT INTO Spare_Part (part_name, price, stock_quantity) VALUES (%s, %s, %s);"
-            execute_write_query(sql, (part_name, price, stock_quantity))
-            flash(f"Spare part '{part_name}' added to catalog!", "success")
+            execute_write_query(sql, (pn_res, price_res, qty_res))
+            flash(f"Spare part '{pn_res}' added to catalog!", "success")
             return redirect(url_for("spare_parts"))
         except mysql.connector.Error as err:
             flash(f"Database error adding part: {err}", "danger")
@@ -893,7 +1073,7 @@ def add_spare_part():
 
 @app.route("/edit_spare_part/<int:id>", methods=["GET", "POST"])
 def edit_spare_part(id):
-    """Edit spare part price and stock."""
+    """Edit spare part price and stock with input validation."""
     try:
         spare_part = execute_read_query("SELECT * FROM Spare_Part WHERE part_id = %s;", (id,), fetch_one=True)
         if not spare_part:
@@ -905,23 +1085,24 @@ def edit_spare_part(id):
             price_str = request.form.get("price", "0").strip()
             stock_str = request.form.get("stock_quantity", "0").strip()
 
-            if not part_name:
-                flash("Part name cannot be empty.", "danger")
-                return render_template("spare_part_form.html", active_page="spare_parts", action="edit", spare_part=spare_part)
+            valid_pn, pn_res = validate_name(part_name, "Part Name", min_len=2, max_len=100)
+            if not valid_pn:
+                flash(pn_res, "danger")
+                return render_template("spare_part_form.html", active_page="spare_parts", action="edit", spare_part={"part_id": id, "part_name": part_name, "price": price_str, "stock_quantity": stock_str})
 
-            try:
-                price = float(price_str)
-                stock_quantity = int(stock_str)
-                if price < 0 or stock_quantity < 0:
-                    flash("Price and stock quantity cannot be negative.", "danger")
-                    return render_template("spare_part_form.html", active_page="spare_parts", action="edit", spare_part=spare_part)
-            except ValueError:
-                flash("Please enter valid numeric values for price and stock.", "danger")
-                return render_template("spare_part_form.html", active_page="spare_parts", action="edit", spare_part=spare_part)
+            valid_price, price_res = validate_price(price_str, "Unit Price", min_val=0.01, max_val=10000000.0)
+            if not valid_price:
+                flash(price_res, "danger")
+                return render_template("spare_part_form.html", active_page="spare_parts", action="edit", spare_part={"part_id": id, "part_name": part_name, "price": price_str, "stock_quantity": stock_str})
+
+            valid_qty, qty_res = validate_quantity(stock_str, "Stock Quantity", min_val=0, max_val=100000)
+            if not valid_qty:
+                flash(qty_res, "danger")
+                return render_template("spare_part_form.html", active_page="spare_parts", action="edit", spare_part={"part_id": id, "part_name": part_name, "price": price_str, "stock_quantity": stock_str})
 
             sql = "UPDATE Spare_Part SET part_name = %s, price = %s, stock_quantity = %s WHERE part_id = %s;"
-            execute_write_query(sql, (part_name, price, stock_quantity, id))
-            flash(f"Part #{id} '{part_name}' updated successfully.", "success")
+            execute_write_query(sql, (pn_res, price_res, qty_res, id))
+            flash(f"Part #{id} '{pn_res}' updated successfully.", "success")
             return redirect(url_for("spare_parts"))
 
         return render_template("spare_part_form.html", active_page="spare_parts", action="edit", spare_part=spare_part)
@@ -988,7 +1169,7 @@ def invoices():
 
 @app.route("/add_invoice", methods=["GET", "POST"])
 def add_invoice():
-    """Generate an invoice for a workshop job card."""
+    """Generate an invoice for a workshop job card with input validation."""
     try:
         job_cards_dropdown = execute_read_query("""
             SELECT jc.job_card_id, jc.job_description, jc.status,
@@ -1010,22 +1191,28 @@ def add_invoice():
         total_amount_str = request.form.get("total_amount", "0").strip()
         status = request.form.get("status", "Unpaid").strip()
 
-        if not job_card_id or not invoice_date:
-            flash("Job Card and Invoice Date are required.", "danger")
+        if not job_card_id:
+            flash("Please select a workshop job card reference.", "danger")
             return render_template("invoice_form.html", active_page="invoices", action="add", job_cards=job_cards_dropdown, default_date=today_str)
 
-        try:
-            total_amount = float(total_amount_str)
-            if total_amount < 0:
-                flash("Total invoice amount cannot be negative.", "danger")
-                return render_template("invoice_form.html", active_page="invoices", action="add", job_cards=job_cards_dropdown, default_date=today_str)
-        except ValueError:
-            flash("Please enter a valid monetary amount.", "danger")
+        valid_dt, dt_res = validate_date_string(invoice_date, "Invoice Date")
+        if not valid_dt:
+            flash(dt_res, "danger")
+            return render_template("invoice_form.html", active_page="invoices", action="add", job_cards=job_cards_dropdown, default_date=today_str)
+
+        valid_amt, amt_res = validate_price(total_amount_str, "Total Invoice Amount", min_val=0.0, max_val=50000000.0)
+        if not valid_amt:
+            flash(amt_res, "danger")
+            return render_template("invoice_form.html", active_page="invoices", action="add", job_cards=job_cards_dropdown, default_date=today_str)
+
+        valid_stat, stat_res = validate_status(status, ['Unpaid', 'Paid', 'Cancelled'], "Payment Settlement Status")
+        if not valid_stat:
+            flash(stat_res, "danger")
             return render_template("invoice_form.html", active_page="invoices", action="add", job_cards=job_cards_dropdown, default_date=today_str)
 
         try:
             sql = "INSERT INTO Invoice (job_card_id, invoice_date, total_amount, status) VALUES (%s, %s, %s, %s);"
-            execute_write_query(sql, (job_card_id, invoice_date, total_amount, status))
+            execute_write_query(sql, (job_card_id, dt_res, amt_res, stat_res))
             flash("Invoice generated successfully!", "success")
             return redirect(url_for("invoices"))
         except mysql.connector.Error as err:
@@ -1036,7 +1223,7 @@ def add_invoice():
 
 @app.route("/edit_invoice/<int:id>", methods=["GET", "POST"])
 def edit_invoice(id):
-    """Edit invoice amount, date, and payment status."""
+    """Edit invoice amount, date, and payment status with input validation."""
     try:
         invoice = execute_read_query("SELECT * FROM Invoice WHERE invoice_id = %s;", (id,), fetch_one=True)
         if not invoice:
@@ -1059,21 +1246,27 @@ def edit_invoice(id):
             total_amount_str = request.form.get("total_amount", "0").strip()
             status = request.form.get("status", "Unpaid").strip()
 
-            if not job_card_id or not invoice_date:
-                flash("Job Card and Invoice Date are required.", "danger")
+            if not job_card_id:
+                flash("Please select a valid workshop job card reference.", "danger")
                 return render_template("invoice_form.html", active_page="invoices", action="edit", job_cards=job_cards_dropdown, invoice=invoice)
 
-            try:
-                total_amount = float(total_amount_str)
-                if total_amount < 0:
-                    flash("Total amount cannot be negative.", "danger")
-                    return render_template("invoice_form.html", active_page="invoices", action="edit", job_cards=job_cards_dropdown, invoice=invoice)
-            except ValueError:
-                flash("Invalid monetary amount.", "danger")
+            valid_dt, dt_res = validate_date_string(invoice_date, "Invoice Date")
+            if not valid_dt:
+                flash(dt_res, "danger")
+                return render_template("invoice_form.html", active_page="invoices", action="edit", job_cards=job_cards_dropdown, invoice=invoice)
+
+            valid_amt, amt_res = validate_price(total_amount_str, "Total Invoice Amount", min_val=0.0, max_val=50000000.0)
+            if not valid_amt:
+                flash(amt_res, "danger")
+                return render_template("invoice_form.html", active_page="invoices", action="edit", job_cards=job_cards_dropdown, invoice=invoice)
+
+            valid_stat, stat_res = validate_status(status, ['Unpaid', 'Paid', 'Cancelled'], "Payment Settlement Status")
+            if not valid_stat:
+                flash(stat_res, "danger")
                 return render_template("invoice_form.html", active_page="invoices", action="edit", job_cards=job_cards_dropdown, invoice=invoice)
 
             sql = "UPDATE Invoice SET job_card_id = %s, invoice_date = %s, total_amount = %s, status = %s WHERE invoice_id = %s;"
-            execute_write_query(sql, (job_card_id, invoice_date, total_amount, status, id))
+            execute_write_query(sql, (job_card_id, dt_res, amt_res, stat_res, id))
             flash(f"Invoice #INV-{id} updated successfully.", "success")
             return redirect(url_for("invoices"))
 

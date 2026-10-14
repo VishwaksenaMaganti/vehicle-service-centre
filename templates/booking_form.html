@@ -37,7 +37,7 @@
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="service_type" class="form-label-custom">Service Operation <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control-custom" id="service_type" name="service_type" value="{{ booking.service_type if booking else '' }}" placeholder="e.g. Annual Maintenance, Brake Inspection" required maxlength="100" list="serviceTypeSuggestions">
+                <input type="text" class="form-control form-control-custom" id="service_type" name="service_type" value="{{ booking.service_type if booking else '' }}" placeholder="e.g. Annual Maintenance, Brake Inspection" required minlength="2" maxlength="100" list="serviceTypeSuggestions">
                 <datalist id="serviceTypeSuggestions">
                   <option value="Annual Precision Maintenance">
                   <option value="Mobil 1 Synthetic Oil & Filter Service">
@@ -50,7 +50,7 @@
               </div>
               <div class="col-md-6">
                 <label for="booking_date" class="form-label-custom">Scheduled Date <span class="text-danger">*</span></label>
-                <input type="date" class="form-control form-control-custom" id="booking_date" name="booking_date" value="{{ booking.booking_date if booking else default_date }}" required>
+                <input type="date" class="form-control form-control-custom" id="booking_date" name="booking_date" value="{{ booking.booking_date if booking else default_date }}" min="2020-01-01" max="2035-12-31" required>
               </div>
             </div>
 

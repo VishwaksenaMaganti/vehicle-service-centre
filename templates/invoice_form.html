@@ -37,12 +37,12 @@
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="invoice_date" class="form-label-custom">Invoice Date <span class="text-danger">*</span></label>
-                <input type="date" class="form-control form-control-custom" id="invoice_date" name="invoice_date" value="{{ invoice.invoice_date if invoice else default_date }}" required>
+                <input type="date" class="form-control form-control-custom" id="invoice_date" name="invoice_date" value="{{ invoice.invoice_date if invoice else default_date }}" min="2020-01-01" max="2035-12-31" required>
               </div>
               <div class="col-md-6">
                 <label for="total_amount" class="form-label-custom">Total Amount (INR ₹) <span class="text-danger">*</span></label>
-                <input type="number" step="0.01" min="0" class="form-control form-control-custom" id="total_amount" name="total_amount" value="{{ invoice.total_amount if invoice else '0.00' }}" required>
-                <div class="form-text">Gross service, labor, and component charges. Cannot be negative.</div>
+                <input type="number" step="0.01" min="0" max="50000000" class="form-control form-control-custom" id="total_amount" name="total_amount" value="{{ invoice.total_amount if invoice else '0.00' }}" required>
+                <div class="form-text">Gross service, labor, and component charges (₹0.00 to ₹50,000,000).</div>
               </div>
             </div>
 

@@ -37,13 +37,13 @@
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="registration_no" class="form-label-custom">Registration Number <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control-custom text-uppercase" id="registration_no" name="registration_no" value="{{ vehicle.registration_no if vehicle else '' }}" placeholder="e.g. TS09AB1234" required maxlength="20">
-                <div class="form-text">Official vehicle license plate number (must be unique).</div>
+                <input type="text" class="form-control form-control-custom text-uppercase" id="registration_no" name="registration_no" value="{{ vehicle.registration_no if vehicle else '' }}" placeholder="e.g. TS09AB1234" required minlength="4" maxlength="20" pattern="[A-Za-z0-9 -]{4,20}" title="4 to 20 alphanumeric characters">
+                <div class="form-text">Official vehicle license plate number (alphanumeric, unique).</div>
               </div>
               <div class="col-md-6">
                 <label for="vin" class="form-label-custom">VIN (Vehicle Identification Number) <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control-custom text-uppercase font-monospace" id="vin" name="vin" value="{{ vehicle.vin if vehicle else '' }}" placeholder="e.g. WBA73EJ04PCH91823" maxlength="30" required>
-                <div class="form-text">17-character unique chassis identification number.</div>
+                <input type="text" class="form-control form-control-custom text-uppercase font-monospace" id="vin" name="vin" value="{{ vehicle.vin if vehicle else '' }}" placeholder="e.g. WBA73EJ04PCH91823" minlength="11" maxlength="30" pattern="[A-Za-z0-9]{11,30}" required title="11 to 30 alphanumeric characters">
+                <div class="form-text">Unique chassis identification number (11-30 characters).</div>
               </div>
             </div>
 
@@ -51,7 +51,7 @@
             <div class="row mb-3">
               <div class="col-md-4">
                 <label for="make" class="form-label-custom">Manufacturer / Make <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control-custom" id="make" name="make" value="{{ vehicle.make if vehicle else '' }}" placeholder="e.g. Hyundai, Toyota, BMW, Honda" list="makeSuggestions" required>
+                <input type="text" class="form-control form-control-custom" id="make" name="make" value="{{ vehicle.make if vehicle else '' }}" placeholder="e.g. Hyundai, Toyota, BMW, Honda" list="makeSuggestions" required minlength="2" maxlength="50">
                 <datalist id="makeSuggestions">
                   <option value="Hyundai">
                   <option value="Toyota">
@@ -72,7 +72,7 @@
 
               <div class="col-md-4">
                 <label for="model" class="form-label-custom">Model Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control-custom" id="model" name="model" value="{{ vehicle.model if vehicle else '' }}" placeholder="e.g. Creta, Fortuner, City, 7 Series" required maxlength="50">
+                <input type="text" class="form-control form-control-custom" id="model" name="model" value="{{ vehicle.model if vehicle else '' }}" placeholder="e.g. Creta, Fortuner, City, 7 Series" required minlength="1" maxlength="50">
               </div>
 
               <div class="col-md-4">

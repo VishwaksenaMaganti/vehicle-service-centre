@@ -36,8 +36,8 @@
             <!-- Job Description -->
             <div class="mb-3">
               <label for="job_description" class="form-label-custom">Technical Task & Diagnostic Instructions <span class="text-danger">*</span></label>
-              <textarea class="form-control form-control-custom" id="job_description" name="job_description" rows="3" placeholder="Detail component inspections, torque specifications, replacement parts, or diagnostics..." required maxlength="255">{{ job_card.job_description if job_card else '' }}</textarea>
-              <div class="form-text">Instructions for certified technicians in the Direct Dialogue Bay.</div>
+              <textarea class="form-control form-control-custom" id="job_description" name="job_description" rows="3" placeholder="Detail component inspections, torque specifications, replacement parts, or diagnostics..." required minlength="5" maxlength="255">{{ job_card.job_description if job_card else '' }}</textarea>
+              <div class="form-text">Instructions for certified technicians in the Direct Dialogue Bay (5 to 255 characters).</div>
             </div>
 
             <!-- Status Dropdown -->
