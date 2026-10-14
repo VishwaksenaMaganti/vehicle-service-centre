@@ -1,10 +1,11 @@
 @echo off
 setlocal
-title Push Project to GitHub
+title Push Project to GitHub - AutoCare Precision
 color 0B
 
 echo =========================================================
 echo    AUTOCARE PRECISION - PUSH TO GITHUB REPOSITORY
+echo    Target: https://github.com/VishwaksenaMaganti/vehicle-service-centre
 echo =========================================================
 echo.
 
@@ -14,7 +15,7 @@ if not exist "%GIT_EXE%" (
     set "GIT_EXE=git"
 )
 
-echo Checking Git status...
+echo [1/3] Verifying Git status...
 "%GIT_EXE%" status >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Git repository not detected or Git is not found.
@@ -22,40 +23,29 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-echo.
-echo Please enter your GitHub Repository URL.
-echo Example: https://github.com/your-username/vehicle-service-centre.git
-echo.
-set /p REPO_URL="Enter GitHub Repository URL: "
+set "REPO_URL=https://github.com/VishwaksenaMaganti/vehicle-service-centre.git"
 
-if "%REPO_URL%"=="" (
-    echo [ERROR] No URL provided. Aborting.
-    pause
-    exit /b 1
-)
-
-echo.
-echo Setting remote origin to: %REPO_URL%
+echo [2/3] Configuring remote origin...
 "%GIT_EXE%" remote remove origin >nul 2>&1
 "%GIT_EXE%" remote add origin %REPO_URL%
-
-echo.
-echo Renaming current branch to main...
 "%GIT_EXE%" branch -M main
 
+echo [3/3] Uploading all commits and files to GitHub...
+echo (If a browser window opens, please sign in to GitHub and click "Authorize")
 echo.
-echo Pushing project to GitHub...
+
 "%GIT_EXE%" push -u origin main
 
 if %ERRORLEVEL% equ 0 (
     echo.
     echo =========================================================
-    echo [SUCCESS] Entire project pushed to GitHub successfully!
+    echo  [SUCCESS] All project files pushed to GitHub successfully!
+    echo  Repository: https://github.com/VishwaksenaMaganti/vehicle-service-centre
     echo =========================================================
 ) else (
     echo.
-    echo [NOTE] If GitHub asked you to sign in, please complete
-    echo authentication in the browser window or Git Credential Manager prompt.
+    echo [NOTE] If authentication was required, please ensure you
+    echo approved the sign-in prompt in your web browser.
 )
 
 echo.

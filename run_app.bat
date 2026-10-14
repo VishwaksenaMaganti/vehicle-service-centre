@@ -69,14 +69,19 @@ if errorlevel 1 (
 )
 echo [OK] MySQL Database connected successfully.
 
-:: 4. Open default web browser to the dashboard
+:: 4. Pop up the Live SQL Query Monitor in a separate background window
+echo [*] Launching real-time SQL Query Monitor window...
+start "MySQL 8.0 Live Query Stream" cmd /k "color 0A && cd /d ""%~dp0"" && %PYTHON_CMD% sql_monitor.py"
+
+:: 5. Open default web browser to the dashboard
 echo [*] Opening web browser at http://127.0.0.1:5000...
 start http://127.0.0.1:5000
 
-:: 5. Start the Flask server
+:: 6. Start the Flask server
 echo.
 echo ========================================================================
 echo   SERVER RUNNING AT: http://127.0.0.1:5000
+echo   SQL queries will stream in REAL TIME in the popup shell window!
 echo   To stop the server at any time, press CTRL + C in this window.
 echo ========================================================================
 echo.

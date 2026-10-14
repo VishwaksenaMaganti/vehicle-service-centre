@@ -18,7 +18,8 @@ from dotenv import load_dotenv
 from database import (
     execute_read_query,
     execute_write_query,
-    test_connection
+    test_connection,
+    get_recent_sql_logs
 )
 
 # Load environment configuration
@@ -1306,6 +1307,17 @@ def serve_screenshot(filename):
     """Serve screenshots and generated graphs directly."""
     screenshot_dir = os.path.join(app.root_path, "screenshots")
     return send_from_directory(screenshot_dir, filename)
+
+
+@app.route("/api/sql_logs")
+def api_sql_logs():
+    """Returns the most recent SQL queries executed by the application."""
+    logs = get_recent_sql_logs()
+    return jsonify({
+        "status": "success",
+        "total": len(logs),
+        "logs": logs
+    })
 
 
 # =========================================================

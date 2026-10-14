@@ -153,10 +153,135 @@
     </div>
   </footer>
 
+  <!-- =========================================================
+       LIVE SQL CONSOLE DRAWER & REAL-TIME MONITOR (DBMS VIVA PROOF)
+       ========================================================= -->
+  <div id="sqlMonitorTrigger" class="position-fixed bottom-0 end-0 m-3" style="z-index: 1060;">
+    <button class="btn btn-dark btn-sm rounded-pill shadow-lg border border-success d-flex align-items-center gap-2 px-3 py-2" onclick="toggleSqlDrawer()" style="background-color: #0b132b; cursor: pointer;" title="Open Real-time SQL Query Console">
+      <span class="spinner-grow spinner-grow-sm text-success" role="status" style="width: 0.65rem; height: 0.65rem;"></span>
+      <span class="fw-bold text-white" style="font-family: monospace; font-size: 0.82rem; letter-spacing: 0.5px;">SQL LIVE STREAM</span>
+      <span class="badge bg-success rounded-pill" id="sqlQueryBadge">0</span>
+    </button>
+  </div>
+
+  <div id="sqlConsoleDrawer" class="position-fixed bottom-0 start-0 w-100 shadow-lg" style="display: none; height: 310px; background-color: #0d1117; color: #c9d1d9; border-top: 2px solid #238636; font-family: 'Consolas', 'Courier New', monospace; font-size: 0.82rem; z-index: 1070;">
+    <!-- Drawer Header -->
+    <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-dark border-bottom border-secondary">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-success text-dark fw-bold">MySQL 8.0</span>
+        <span class="text-white fw-bold">Live Query Execution Log</span>
+        <span class="text-secondary small d-none d-md-inline">(Target: vehicle_service_centre | Also mirrored in background CMD shell)</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2 text-white" onclick="clearSqlDisplay()" style="font-size: 0.75rem;">Clear Display</button>
+        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="toggleSqlDrawer()" style="font-size: 0.75rem;">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Drawer Query Stream Body -->
+    <div id="sqlStreamBody" class="p-3 overflow-y-auto" style="height: calc(100% - 40px); background-color: #090d13;">
+      <div class="text-secondary text-center py-4" id="sqlStreamEmptyMsg">
+        Listening for database operations... Perform any action (create, edit, view, delete) to see real-time SQL execution!
+      </div>
+    </div>
+  </div>
+
   <!-- Bootstrap 5.3 Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Custom JS -->
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  
+  <script>
+    let isSqlDrawerOpen = false;
+    let lastKnownSqlTotal = 0;
+
+    function toggleSqlDrawer() {
+      const drawer = document.getElementById('sqlConsoleDrawer');
+      const trigger = document.getElementById('sqlMonitorTrigger');
+      isSqlDrawerOpen = !isSqlDrawerOpen;
+      if (isSqlDrawerOpen) {
+        drawer.style.display = 'block';
+        trigger.style.display = 'none';
+        pollSqlLogs(true);
+      } else {
+        drawer.style.display = 'none';
+        trigger.style.display = 'block';
+      }
+    }
+
+    function clearSqlDisplay() {
+      const body = document.getElementById('sqlStreamBody');
+      body.innerHTML = '<div class="text-secondary text-center py-4">Display cleared. Waiting for next SQL query...</div>';
+    }
+
+    function renderSqlLog(log) {
+      const isWrite = log.type === 'WRITE';
+      const isError = log.status === 'ERROR';
+      const badgeClass = isError ? 'bg-danger' : (isWrite ? 'bg-success' : 'bg-info text-dark');
+      const typeLabel = isError ? 'ROLLBACK / ERROR' : (isWrite ? 'TRANSACTION WRITE (COMMIT)' : 'READ QUERY');
+      const borderCol = isError ? '#da3633' : (isWrite ? '#238636' : '#1f6feb');
+
+      let paramsHtml = '';
+      if (log.params && log.params !== 'None' && log.params !== '()') {
+        paramsHtml = `<div class="text-warning small mt-1"><span class="text-secondary">Params:</span> ${escapeHtml(log.params)}</div>`;
+      }
+
+      let extraInfo = `${log.duration_ms} ms`;
+      if (log.rowcount !== null && log.rowcount !== undefined) {
+        extraInfo += ` | Rows: ${log.rowcount}`;
+      }
+      if (log.lastrowid) {
+        extraInfo += ` | Last Insert ID: ${log.lastrowid}`;
+      }
+
+      return `
+        <div class="p-2 mb-2 rounded" style="background-color: #161b22; border-left: 3px solid ${borderCol};">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="badge ${badgeClass} text-uppercase" style="font-size: 0.7rem;">${typeLabel}</span>
+            <span class="text-secondary" style="font-size: 0.75rem;">${log.timestamp} | <span class="text-info">${extraInfo}</span></span>
+          </div>
+          <div class="text-white" style="word-break: break-all; font-family: monospace;">${escapeHtml(log.query)}</div>
+          ${paramsHtml}
+        </div>
+      `;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function pollSqlLogs(forceScroll = false) {
+      fetch('/api/sql_logs')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.logs) {
+            document.getElementById('sqlQueryBadge').innerText = data.total;
+            if (isSqlDrawerOpen) {
+              const body = document.getElementById('sqlStreamBody');
+              if (data.logs.length === 0) {
+                body.innerHTML = '<div class="text-secondary text-center py-4">No queries logged yet.</div>';
+                return;
+              }
+              // Reverse to show chronologically or newest at top
+              body.innerHTML = data.logs.map(log => renderSqlLog(log)).join('');
+            }
+          }
+        })
+        .catch(err => console.debug('SQL log fetch paused'));
+    }
+
+    // Auto-poll every 1.5 seconds
+    setInterval(pollSqlLogs, 1500);
+    // Initial fetch
+    pollSqlLogs();
+  </script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>
