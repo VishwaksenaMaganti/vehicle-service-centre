@@ -30,8 +30,11 @@ CREATE TABLE IF NOT EXISTS Vehicle (
     vehicle_id INT PRIMARY KEY AUTO_INCREMENT,
     customer_id INT NOT NULL,
     registration_no VARCHAR(20) NOT NULL UNIQUE,
+    vin VARCHAR(30),
     make VARCHAR(50),
     model VARCHAR(50),
+    model_number VARCHAR(50),
+    warranty_details VARCHAR(100) DEFAULT 'Standard Warranty Active',
 
     CONSTRAINT fk_vehicle_customer
         FOREIGN KEY (customer_id)
@@ -139,13 +142,13 @@ INSERT INTO Customer (name, phone, email) VALUES
 -- VEHICLE DATA
 
 INSERT INTO Vehicle
-(customer_id, registration_no, make, model)
+(customer_id, registration_no, vin, make, model, model_number, warranty_details)
 VALUES
-(1, 'TS09AB1234', 'Honda', 'City'),
-(2, 'TS10CD5678', 'Hyundai', 'Creta'),
-(3, 'AP16EF9012', 'Toyota', 'Fortuner'),
-(4, 'TS11GH3456', 'Maruti', 'Swift'),
-(5, 'AP07JK7890', 'Tata', 'Nexon');
+(1, 'TS09AB1234', 'MA1TA2845N4018291', 'Honda', 'City', 'ZX 1.5 i-VTEC CVT', 'Active (5-Year / 120,000 km Comprehensive)'),
+(2, 'TS10CD5678', 'WP0AA2994NS240182', 'Porsche', '911 Carrera', 'Carrera S Coupe 3.0L Twin-Turbo', 'Active (Porsche Approved Warranty till Oct 2027)'),
+(3, 'AP16EF9012', 'MALC381CLPM102948', 'Hyundai', 'Creta', 'SX(O) 1.5 Turbo DCT', 'Active (3-Year / Unlimited KM Factory Warranty)'),
+(4, 'TS11GH3456', 'MBJ11EB84MN492019', 'Toyota', 'Fortuner', '2.8 4x4 AT Legender', 'Active (Toyota Shield Protection till Dec 2028)'),
+(5, 'AP07JK7890', 'MAKGM668LNA390123', 'Honda', 'City', 'ZX 1.5 i-VTEC CVT', 'Active (5-Year / 120,000 km Comprehensive)');
 
 
 -- SERVICE BOOKINGS
